@@ -6,27 +6,32 @@
 #include <QtMath>
 #include <../GenClasses.h>
 
-class Square : public QObject, public ICreature {
+
+class Square : public QObject, public IPopulation {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "DirectoriX.UIR.ICreature" FILE "Demo-Square.json")
-    Q_INTERFACES(ICreature)
+    Q_PLUGIN_METADATA(IID "DirectoriX.UIR.Population" FILE "Demo-Square.json")
+    Q_INTERFACES(IPopulation)
 
-    // ICreature interface
-  public:
-    void inherit(ICreature *parent1, ICreature *parent2);
-    void randomize();
-    void mutate(qreal chance);
-    qreal getfitness();
-    QString getinfo();
-    void calculate();
-    void showfullinfo();
+    class param: public Creature {
+      public:
+        double a, b;
+        qreal square, perimeter;
+    };
 
-  public:
-    qreal a, b;
-    //static QString name = ;
   private:
-    qreal square, perimeter;
     static const qreal min = 60, max = 180;
+
+    // IPopulation interface
+  public:
+    void inherit(int result, int parent1, int parent2);
+    void fill(int count);
+    void randomize(int number);
+    void mutate(int number, qreal chance);
+    void sort();
+    QStringList getinfo();
+    void showfullinfo(int number);
+    void calculate();
+    void calculateAt(Creature *c);
 };
 
 #endif // SQUARE_H

@@ -1,38 +1,70 @@
 #include "square.h"
 
-void Square::inherit(ICreature *parent1, ICreature *parent2)
+void Square::inherit(int result, int parent1, int parent2)
 {
-  this->a = (RNG::getreal() < 0.5) ? (((Square *)parent1)->a) : (((Square *)parent2)->a);
-  this->b = (RNG::getreal() < 0.5) ? (((Square *)parent1)->b) : (((Square *)parent2)->b);
+  if (RNG::getreal() < 0.5)
+    {
+      ((param *)creatures[result])->a = ((param *)creatures[parent1])->a;
+      ((param *)creatures[result])->b = ((param *)creatures[parent2])->b;
+    }
+  else
+    {
+      ((param *)creatures[result])->a = ((param *)creatures[parent2])->a;
+      ((param *)creatures[result])->b = ((param *)creatures[parent1])->b;
+    }
 }
 
-void Square::randomize()
+void Square::fill(int count)
 {
-  this->a = RNG::getreal(min, max);
-  this->b = RNG::getreal(min, max);
+  for (int i = creatures.count() - 1; i < count; i++)
+    {
+      creatures.append(new param());
+    }
 }
 
-void Square::mutate(qreal chance)
+void Square::randomize(int number)
+{
+  ((param *)creatures[number])->a = RNG::getreal(min, max);
+  ((param *)creatures[number])->b = RNG::getreal(min, max);
+}
+
+void Square::mutate(int number, qreal chance)
 {
   if (RNG::getreal() < chance)
-    { this->a = RNG::getreal(min, max); }
+    { ((param *)creatures[number])->a = RNG::getreal(min, max); }
 
   if (RNG::getreal() < chance)
-    { this->b = RNG::getreal(min, max); }
+    { ((param *)creatures[number])->b = RNG::getreal(min, max); }
 }
 
-qreal Square::getfitness()
+void Square::sort()
 {
-  return this->fitness;
+  std::sort(creatures.begin(), creatures.end());
 }
 
-QString Square::getinfo()
+QStringList Square::getinfo()
 {
-  return QString::number(fitness, 'G', 5);
+  QStringList result;
+
+  for (int i = 0; i < creatures.count(); i++)
+    {
+      result.append(QString::number(creatures[i]->fitness, 'g', 5));
+    }
+
+  return result;
 }
 
+void Square::showfullinfo(int number)
+{
+}
 
 void Square::calculate()
+{
+  for (int i = 0; i < creatures.count(); i++)
+    { calculateAt(creatures[i]); }
+}
+
+void Square::calculateAt(Creature *c)
 {
   /// Some blueprint to understand math
   ///
@@ -45,16 +77,12 @@ void Square::calculate()
   ///       *----*
   ///       a  1  b
   ///
-  this->perimeter = 0;
-  qreal  d, alpha = qDegreesToRadians(this->a), beta = qDegreesToRadians(this->b);
+  param *cre = (param *)c;
+  cre->perimeter = 0;
+  qreal  d, alpha = qDegreesToRadians(cre->a), beta = qDegreesToRadians(cre->b);
   d = 2 * qSin(beta / 2);
   qreal a_i = alpha + beta / 2 - qDegreesToRadians(90.0);
-  this->square = (d * qSin(a_i) + qSin(beta)) / 2;
-  this->perimeter = 3 + qSqrt(1 + d * d - 2 * d * qCos(a_i));
-  this->fitness = this->square / this->perimeter;
-}
-
-
-void Square::showfullinfo()
-{
+  cre->square = (d * qSin(a_i) + qSin(beta)) / 2;
+  cre->perimeter = 3 + qSqrt(1 + d * d - 2 * d * qCos(a_i));
+  cre->fitness = cre->square / cre->perimeter;
 }

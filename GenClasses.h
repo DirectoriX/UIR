@@ -6,43 +6,50 @@
 #include <QVariant>
 #include <QDateTime>
 
-// Interface for genetic simulation algorithm
-class ICreature {
-  protected:
-    qreal fitness;
-    /// NOTE use this fitness with operator< to sort
+class Creature {
   public:
-    // Used to obtain ICreature name
+    qreal fitness;
+};
+
+// Interface for genetic simulation algorithm
+class IPopulation {
+  public:
+    // Used to obtain Population name
     /// NOTE Thus must be changed in every inherited class!
     static QString name;
+    QVector<Creature*> creatures;
 
-    virtual ~ICreature() {}
+    virtual ~IPopulation() {}
 
     // Create child ICreature from two parents
-    virtual void inherit(ICreature *parent1, ICreature *parent2) = 0;
+    virtual void inherit(int result, int parent1, int parent2) = 0;
+
+    // Make creatures up to count
+    virtual void fill(int count) = 0;
 
     // Set all parameters to random values
-    // This operatopn equals to creating new ICreature object
-    virtual void randomize(void) = 0;
+    virtual void randomize(int number) = 0;
 
     // Change some parameters with given chance
-    virtual void mutate(qreal chance) = 0;
+    virtual void mutate(int number, qreal chance) = 0;
 
-    // Get fitness value
-    virtual qreal getfitness(void) = 0;
-    /// TODO: operator< instead of getfitness
-    /// virtual bool operator<(ICreature *other)=0;
+    // Sort creatures
+    virtual void sort(void) = 0;
 
-    // Get short info about ICreature
-    virtual QString getinfo(void) = 0;
+    // Get short info about population
+    virtual QStringList getinfo(void)  = 0;
 
     // Show full information
     // powered by plug-in
-    virtual void showfullinfo() = 0;
+    virtual void showfullinfo(int number) = 0;
 
     // Calculate fitness here
     // This function must present for some reasons - i.e. Creatures can "fight" with each other to obtain fitness value
     virtual void calculate(void) = 0;
+
+    // Calculate fitness here
+    // This function must present for some reasons - i.e. Creatures can "fight" with each other to obtain fitness value
+    virtual void calculateAt(Creature *c) = 0;
 };
 
 class NeuroInput {
@@ -79,9 +86,9 @@ class RNG {
     static qreal getreal(qreal min, qreal max);
 };
 
-#define Creature_iid "DirectoriX.UIR.Creature"
+#define Population_iid "DirectoriX.UIR.Population"
 
-Q_DECLARE_INTERFACE(ICreature, Creature_iid)
+Q_DECLARE_INTERFACE(IPopulation, Population_iid)
 
 #define NeuroNet_iid "DirectoriX.UIR.NeuroNet"
 
