@@ -1,16 +1,58 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-void run(MainWindow *window, quint32 generation, int minpop, int maxpop, qreal mutation_probability)
+MainWindow *wnd;
+
+bool cmp(Creature *i, Creature *j) { return (i->fitness > j->fitness); }
+
+void run(quint32 generation, int minpop, int maxpop)
 {
-  while (window->work)
+  int i, u, g;
+  int divider = 1;
+  QTime t;
+  t.start();
+
+  while (wnd->work)
     {
       generation++;
+      std::sort(wnd->population->creatures.begin(), wnd->population->creatures.end(), cmp);
 
-      for (int i = 0; i < INT_MAX / 1000; i++) {}
+      if (RNG::getreal() < wnd->new_probability)
+        {
+          wnd->population->randomize(minpop - 1);
+        }
 
-      window->SetProgress(generation);
+      for (i = minpop; i < maxpop; i++)
+        {
+          u = RNG::getint(0, minpop);
+          g = RNG::getint(0, minpop, u);
+          wnd->population->inherit(i, u, g);
+          wnd->population->mutate(i, wnd->mutation_probability);
+        }
+
+      wnd->population->calculate();
+
+      if (generation % divider == 0)
+        {
+          wnd->SetProgressInfo(generation, generation % (divider * 2) == 0, minpop);
+
+          if (t.elapsed() < 250)
+            {
+              divider *= 2;
+            }
+          else
+            if (t.elapsed() > 3000)
+              {
+                divider /= (divider > 1) ? 2 : 1;
+              }
+
+          t.start();
+        }
     }
+
+  while (t.elapsed() < 500) {}
+
+  wnd->SetProgressInfo(generation, true, minpop);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -25,9 +67,18 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-void MainWindow::SetProgress(quint32 value)
+void MainWindow::SetProgressInfo(quint32 value, bool updateinfo, int count)
 {
   this->ui->label_GenerationNumber->setText(QString::number(value));
+
+  if (updateinfo)
+    {
+      this->ui->list_Creatures->clear();
+      this->ui->list_Creatures->addItems(population->getinfo(count));
+    }
+
+  if (value > 100000)
+    { this->ui->action_Stop->trigger(); }
 }
 
 void MainWindow::on_spin_PopulationMin_valueChanged(int value)
@@ -37,16 +88,25 @@ void MainWindow::on_spin_PopulationMin_valueChanged(int value)
 
 void MainWindow::on_action_Run_triggered()
 {
+  population->fill(this->ui->spin_PopulationMax->value());
   this->work = true;
   this->ui->action_Run->setDisabled(true);
   this->ui->action_Reset->setDisabled(true);
   this->ui->action_Stop->setEnabled(true);
-  QFuture<void> fut = QtConcurrent::run(run, this, this->ui->label_GenerationNumber->text().toInt(), 1, 2, 3.4);
+  this->ui->list_Creatures->clearSelection();
+  QtConcurrent::run(run, this->ui->label_GenerationNumber->text().toInt(),
+                    this->ui->spin_PopulationMin->value(),
+                    this->ui->spin_PopulationMax->value());
 }
 
 void MainWindow::on_action_Stop_triggered()
 {
-  work = false;
+  if (work)
+    {
+      work = false;
+      this->ui->list_Creatures->clear();
+    }
+
   this->ui->action_Run->setEnabled(true);
   this->ui->action_Reset->setEnabled(true);
   this->ui->action_Stop->setDisabled(true);
@@ -56,45 +116,67 @@ void MainWindow::on_action_Reset_triggered()
 {
   this->ui->label_GenerationNumber->setText("0");
   this->ui->list_Creatures->clear();
+  population->fill(this->ui->spin_PopulationMax->value());
 
-  for (int i = 0; i < population.size(); i++)
+  for (int i = 0; i < population->creatures.size(); i++)
     {
-      population[i]->randomize();
-      population[i]->calculate();
-      this->ui->list_Creatures->addItem(population[i]->getinfo());
+      population->randomize(i);
     }
+
+  population->calculate();
+  this->ui->list_Creatures->addItems(population->getinfo(this->ui->spin_PopulationMax->value()));
 }
 
 void MainWindow::on_action_openCreature_triggered()
 {
+  wnd = this;
   int i;
-  creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, tr("?? (*.dll)"));
-  QPluginLoader loader(creature_library);
-  QObject *plugin = loader.instance();
 
-  if (plugin)
+  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, tr("?? (*.dll)"))) != "")
     {
-      //Delete all Creatures
-      for (i = 0; i < population.size(); i++)
-        { delete population[i]; }
-
-      population.clear();
-      delete &population;
-      // Now create new population
-      int count = this->ui->spin_PopulationMax->value();
-      population = *(new QVector<ICreature *>(count, NULL));
-      population[0] = qobject_cast<ICreature *>(plugin);
-
-      for (i = 1; i < count; i++)
+      if (loader)
         {
-          population[i] = qobject_cast<ICreature *>(loader.instance());
+          //Delete all Creatures
+          for (i = 0; i < population->creatures.size(); i++)
+            { delete population->creatures[i]; }
+
+          population->creatures.clear();
+          loader->unload();
+          delete loader;
         }
 
-      this->on_action_Reset_triggered();
-      this->ui->action_Run->setEnabled(true);
-    }
-  else
-    {
-      QMessageBox(QMessageBox::Warning, "Error", "Not plugin!", QMessageBox::Ok, this).exec();
+      loader = new QPluginLoader(creature_library);
+      QObject *plugin = loader->instance();
+
+      if (plugin)
+        {
+          // Now create new population
+          int count = this->ui->spin_PopulationMax->value();
+          population = qobject_cast<IPopulation *>(plugin);
+          population->fill(count);
+          this->on_action_Reset_triggered();
+          this->ui->action_Run->setEnabled(true);
+          this->ui->action_Reset->setEnabled(true);
+        }
+      else
+        {
+          QMessageBox(QMessageBox::Warning, "Error", "Not plugin!", QMessageBox::Ok, this).exec();
+        }
     }
 }
+
+void MainWindow::on_list_Creatures_doubleClicked(const QModelIndex &index)
+{
+  population->showfullinfo(index.row());
+}
+
+void MainWindow::on_Spin_MutationChance_valueChanged(double arg1)
+{
+  mutation_probability = arg1;
+}
+
+void MainWindow::on_Spin_NewChance_valueChanged(double arg1)
+{
+  new_probability = arg1;
+}
+

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtPlugin>
 #include <QtMath>
+#include <QMessageBox>
 #include <../GenClasses.h>
 
 
@@ -28,10 +29,10 @@ class Square : public QObject, public IPopulation {
     void randomize(int number);
     void mutate(int number, qreal chance);
     void sort();
-    QStringList getinfo();
+    QStringList getinfo(int count);
     void showfullinfo(int number);
     void calculate();
-    void calculateAt(Creature *c);
+    void calculateAt(Creature *&c);
 };
 
 #endif // SQUARE_H

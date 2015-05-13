@@ -2,7 +2,7 @@
 
 int RNG::getint(int min, int max)
 {
-  return (int)RNG::getreal() * (max - min) + min;
+  return (int)(RNG::getreal() * (max - min) + min);
 }
 
 int RNG::getint(int min, int max, int excluded)
@@ -10,7 +10,7 @@ int RNG::getint(int min, int max, int excluded)
   if (excluded > min && excluded < max)
     {
       int res = RNG::getint(min, max - 1);
-      return (res <= excluded) ? res : res + 1;
+      return (res >= excluded) ? res + 1 : res;
     }
   else
     { return RNG::getint(min, max); }

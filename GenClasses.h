@@ -37,7 +37,7 @@ class IPopulation {
     virtual void sort(void) = 0;
 
     // Get short info about population
-    virtual QStringList getinfo(void)  = 0;
+    virtual QStringList getinfo(int count)  = 0;
 
     // Show full information
     // powered by plug-in
@@ -49,7 +49,7 @@ class IPopulation {
 
     // Calculate fitness here
     // This function must present for some reasons - i.e. Creatures can "fight" with each other to obtain fitness value
-    virtual void calculateAt(Creature *c) = 0;
+    virtual void calculateAt(Creature *&c) = 0;
 };
 
 class NeuroInput {
