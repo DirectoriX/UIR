@@ -37,7 +37,7 @@ class IPopulation {
     virtual void sort(void) = 0;
 
     // Get short info about population
-    virtual QStringList getinfo(int count)  = 0;
+    virtual QStringList getinfo(int count) = 0;
 
     // Show full information
     // powered by plug-in
@@ -52,32 +52,6 @@ class IPopulation {
     virtual void calculateAt(Creature *&c) = 0;
 };
 
-class NeuroInput {
-  public:
-    QString filename;
-    virtual bool load() = 0;
-    virtual bool load(QString filename) = 0;
-};
-
-class NeuroResult {
-  public:
-    virtual bool save(QString filename) = 0;
-};
-
-// Interface for neural networks
-class INeuroNet {
-  public:
-    virtual ~INeuroNet() {}
-
-    virtual NeuroResult *analyze(NeuroInput *input) = 0;
-
-    virtual void learn(NeuroInput *input, NeuroResult *result) = 0;
-
-    virtual void save(QString filename) = 0;
-
-    virtual bool load(QString filename) = 0;
-};
-
 class RNG {
   public:
     static int getint(int min, int max);
@@ -89,10 +63,6 @@ class RNG {
 #define Population_iid "DirectoriX.UIR.Population"
 
 Q_DECLARE_INTERFACE(IPopulation, Population_iid)
-
-#define NeuroNet_iid "DirectoriX.UIR.NeuroNet"
-
-Q_DECLARE_INTERFACE(INeuroNet, NeuroNet_iid)
 
 #endif // GENINTERFACES
 
