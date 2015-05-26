@@ -11,10 +11,11 @@ TEMPLATE = lib
 CONFIG += plugin
 
 SOURCES += square.cpp \
-    ../GenClasses.cpp
+    ../rng.cpp
 
 HEADERS += square.h \
-    ../GenClasses.h
+    ../icreature.h \
+    ../rng.h
 
 DISTFILES += Demo-Square.json
 

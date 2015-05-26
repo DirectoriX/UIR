@@ -3,56 +3,46 @@
 
 MainWindow *wnd;
 
-bool cmp(Creature *i, Creature *j) { return (i->fitness > j->fitness); }
-
-void run(quint32 generation, int minpop, int maxpop)
+void run(quint32 generation)
 {
   int i, u, g;
-  int divider = 1;
   QTime t;
   t.start();
 
   while (wnd->work)
     {
       generation++;
-      std::sort(wnd->population->creatures.begin(), wnd->population->creatures.end(), cmp);
 
       if (RNG::getreal() < wnd->new_probability)
         {
-          wnd->population->randomize(minpop - 1);
+          Population::create();
         }
 
-      for (i = minpop; i < maxpop; i++)
+      for (i = Population::count(); i < wnd->maxpop; i++)
         {
-          u = RNG::getint(0, minpop);
-          g = RNG::getint(0, minpop, u);
-          wnd->population->inherit(i, u, g);
-          wnd->population->mutate(i, wnd->mutation_probability);
+          u = RNG::getint(0, Population::count());
+          g = RNG::getint(0, Population::count(), u);
+          Population::inherit(u, g);
         }
 
-      wnd->population->calculate();
-
-      if (generation % divider == 0)
+      for (i = 0; i < wnd->maxpop; i++)
         {
-          wnd->SetProgressInfo(generation, generation % (divider * 2) == 0, minpop);
+          Population::mutate(i, wnd->mutation_probability);
+        }
 
-          if (t.elapsed() < 250)
-            {
-              divider *= 2;
-            }
-          else
-            if (t.elapsed() > 3000)
-              {
-                divider /= (divider > 1) ? 2 : 1;
-              }
+      Population::sort();
+      Population::shrink(wnd->minpop);
 
+      if (t.elapsed() > 1000)
+        {
+          wnd->SetProgressInfo(generation, true);
           t.start();
         }
     }
 
   while (t.elapsed() < 500) {}
 
-  wnd->SetProgressInfo(generation, true, minpop);
+  wnd->SetProgressInfo(generation, true);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -60,6 +50,10 @@ MainWindow::MainWindow(QWidget *parent) :
   ui(new Ui::MainWindow)
 {
   ui->setupUi(this);
+  mutation_probability = 0.025000;
+  new_probability = 0.005000;
+  minpop = 10;
+  maxpop = 50;
 }
 
 MainWindow::~MainWindow()
@@ -67,44 +61,50 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-void MainWindow::SetProgressInfo(quint32 value, bool updateinfo, int count)
+void MainWindow::SetProgressInfo(quint32 value, bool updateinfo)
 {
   this->ui->label_GenerationNumber->setText(QString::number(value));
 
   if (updateinfo)
     {
       this->ui->list_Creatures->clear();
-      this->ui->list_Creatures->addItems(population->getinfo(count));
+      QStringList *lptr = Population::getstrings();
+      this->ui->list_Creatures->addItems(*lptr);
+      delete lptr;
     }
+}
 
-  if (value > 100000)
-    { this->ui->action_Stop->trigger(); }
+void MainWindow::closeEvent(QCloseEvent *ce)
+{
+  if (work)
+    {
+      ce->ignore();
+      this->ui->action_Stop->trigger();
+    }
 }
 
 void MainWindow::on_spin_PopulationMin_valueChanged(int value)
 {
-  this->ui->spin_PopulationMax->setMinimum(value + 1);
+  ui->spin_PopulationMax->setMinimum(value + 1);
+  minpop = value;
 }
 
 void MainWindow::on_action_Run_triggered()
 {
-  population->fill(this->ui->spin_PopulationMax->value());
   this->work = true;
   this->ui->action_Run->setDisabled(true);
   this->ui->action_Reset->setDisabled(true);
   this->ui->action_Stop->setEnabled(true);
   this->ui->list_Creatures->clearSelection();
-  QtConcurrent::run(run, this->ui->label_GenerationNumber->text().toInt(),
-                    this->ui->spin_PopulationMin->value(),
-                    this->ui->spin_PopulationMax->value());
+  QtConcurrent::run(run, this->ui->label_GenerationNumber->text().toInt());
 }
 
 void MainWindow::on_action_Stop_triggered()
 {
   if (work)
     {
-      work = false;
       this->ui->list_Creatures->clear();
+      work = false;
     }
 
   this->ui->action_Run->setEnabled(true);
@@ -116,31 +116,23 @@ void MainWindow::on_action_Reset_triggered()
 {
   this->ui->label_GenerationNumber->setText("0");
   this->ui->list_Creatures->clear();
-  population->fill(this->ui->spin_PopulationMax->value());
-
-  for (int i = 0; i < population->creatures.size(); i++)
-    {
-      population->randomize(i);
-    }
-
-  population->calculate();
-  this->ui->list_Creatures->addItems(population->getinfo(this->ui->spin_PopulationMax->value()));
+  Population::clear();
+  Population::create(this->ui->spin_PopulationMax->value());
+  this->ui->list_Creatures->clear();
+  QStringList *lptr = Population::getstrings();
+  this->ui->list_Creatures->addItems(*lptr);
 }
 
 void MainWindow::on_action_openCreature_triggered()
 {
   wnd = this;
-  int i;
 
-  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, tr("?? (*.dll)"))) != "")
+  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, tr("?? (*.dll1)"))) != "")
     {
       if (loader)
         {
           //Delete all Creatures
-          for (i = 0; i < population->creatures.size(); i++)
-            { delete population->creatures[i]; }
-
-          population->creatures.clear();
+          Population::clear();
           loader->unload();
           delete loader;
         }
@@ -151,9 +143,7 @@ void MainWindow::on_action_openCreature_triggered()
       if (plugin)
         {
           // Now create new population
-          int count = this->ui->spin_PopulationMax->value();
-          population = qobject_cast<IPopulation *>(plugin);
-          population->fill(count);
+          Population::setroot(qobject_cast<ICreature *>(plugin));
           this->on_action_Reset_triggered();
           this->ui->action_Run->setEnabled(true);
           this->ui->action_Reset->setEnabled(true);
@@ -167,7 +157,19 @@ void MainWindow::on_action_openCreature_triggered()
 
 void MainWindow::on_list_Creatures_doubleClicked(const QModelIndex &index)
 {
-  population->showfullinfo(index.row());
+  if (work)
+    { return; }
+
+  QStringList *strs = Population::showinfo(index.row());
+  QString message;
+
+  for (int i = 0; i < strs->count(); i++)
+    {
+      message += strs->at(i) + '\n';
+    }
+
+  QMessageBox(QMessageBox::Information, "I", message, QMessageBox::Ok).exec();
+  delete strs;
 }
 
 void MainWindow::on_Spin_MutationChance_valueChanged(double arg1)
@@ -180,3 +182,7 @@ void MainWindow::on_Spin_NewChance_valueChanged(double arg1)
   new_probability = arg1;
 }
 
+void MainWindow::on_spin_PopulationMax_valueChanged(int arg1)
+{
+  maxpop = arg1;
+}

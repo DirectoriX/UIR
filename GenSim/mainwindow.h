@@ -6,8 +6,11 @@
 #include <QPluginLoader>
 #include <QMessageBox>
 #include <QFileDialog>
-#include "../GenClasses.h"
 #include <QStringList>
+
+#include "../icreature.h"
+#include "../rng.h"
+#include "population.h"
 
 namespace Ui {
   class MainWindow;
@@ -22,10 +25,12 @@ class MainWindow : public QMainWindow {
     ~MainWindow();
 
     bool work;
-    IPopulation *population;
     qreal mutation_probability, new_probability;
+    qint32 minpop, maxpop;
 
-    void SetProgressInfo(quint32 value, bool updateinfo, int count);
+    void SetProgressInfo(quint32 value, bool updateinfo);
+
+    void closeEvent(QCloseEvent * ce);
 
   private slots:
     void on_spin_PopulationMin_valueChanged(int value);
@@ -37,7 +42,9 @@ class MainWindow : public QMainWindow {
     void on_Spin_MutationChance_valueChanged(double arg1);
     void on_Spin_NewChance_valueChanged(double arg1);
 
-  private:
+    void on_spin_PopulationMax_valueChanged(int arg1);
+
+private:
     Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;

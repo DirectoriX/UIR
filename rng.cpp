@@ -1,4 +1,4 @@
-#include "GenClasses.h"
+#include "rng.h"
 
 int RNG::getint(int min, int max)
 {
@@ -21,7 +21,7 @@ qreal RNG::getreal(qreal min, qreal max)
   return RNG::getreal() * (max - min) + min;
 }
 
-double RNG::getreal()
+qreal RNG::getreal()
 {
   return qrand() * 1.0 / RAND_MAX;
 }

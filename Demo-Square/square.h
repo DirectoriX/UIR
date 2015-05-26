@@ -4,35 +4,30 @@
 #include <QObject>
 #include <QtPlugin>
 #include <QtMath>
+//#include <cmath>
 #include <QMessageBox>
-#include <../GenClasses.h>
 
+#include "../icreature.h"
+#include "../rng.h"
 
-class Square : public QObject, public IPopulation {
+class Square : public QObject, public ICreature {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "DirectoriX.UIR.Population" FILE "Demo-Square.json")
-    Q_INTERFACES(IPopulation)
+    Q_PLUGIN_METADATA(IID "DirectoriX.UIR.Creature" FILE "Demo-Square.json")
+    Q_INTERFACES(ICreature)
 
-    class param: public Creature {
-      public:
-        double a, b;
-        qreal square, perimeter;
-    };
+  public:
+    Square();
+    ~Square();
+
+    Square *create();
+    void initdoubleparam(int number);
+    void calculate();
+    void prepare();
 
   private:
-    static const qreal min = 60, max = 180;
-
-    // IPopulation interface
-  public:
-    void inherit(int result, int parent1, int parent2);
-    void fill(int count);
-    void randomize(int number);
-    void mutate(int number, qreal chance);
-    void sort();
-    QStringList getinfo(int count);
-    void showfullinfo(int number);
-    void calculate();
-    void calculateAt(Creature *&c);
+    static const qreal min = M_PI / 3, max = M_PI;
+    qreal square, perimeter;
+    static int paramcount1;
 };
 
 #endif // SQUARE_H
