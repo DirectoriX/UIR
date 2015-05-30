@@ -3,7 +3,14 @@
 QVector<ICreature *> creatures;
 ICreature *root;
 
+int minsize;
+
 int ic;
+
+void call(ICreature *&c)
+{
+  c->calculate();
+}
 
 bool cmp(ICreature *i, ICreature *j) { return (i->fitness > j->fitness); }
 
@@ -15,6 +22,7 @@ void calc(ICreature *cr)
 void Population::create()
 {
   creatures.append(root->create());
+  creatures.last()->fitness = 0;
 }
 
 void Population::create(int k)
@@ -45,8 +53,9 @@ void Population::mutate(int number, double probability)
 
 void Population::sort()
 {
-  for (int i = 0; i < creatures.count(); i++)    { creatures[i]->calculate(); }
+  for (int i = minsize; i < creatures.count(); i++)    { creatures[i]->calculate(); }
 
+  //  QtConcurrent::blockingMap(creatures, call);
   std::sort(creatures.begin(), creatures.end(), cmp);
 }
 
@@ -83,8 +92,12 @@ bool Population::save(QString filename)
         {
           out << cr->doubleparams[ic];
         }
+
+      out << cr->fitness;
     }
 
+  file.flush();
+  file.close();
   return true;
 }
 
@@ -114,6 +127,8 @@ bool Population::load(QString filename)
         {
           in >> cr->doubleparams[i];
         }
+
+      in >> cr->fitness;
     }
 
   return true;
@@ -125,7 +140,7 @@ QStringList *Population::getstrings()
 
   for (ic = 0; ic < creatures.count(); ic++)
     {
-      result->append(QString::number(creatures[ic]->fitness)) ;
+      result->append(QString::number(creatures[ic]->fitness, 'g', 8)) ;
     }
 
   return result;
@@ -143,6 +158,8 @@ void Population::shrink(int newcount)
       delete creatures[ic];
       creatures.removeLast();
     }
+
+  minsize = newcount;
 }
 
 void Population::clear()

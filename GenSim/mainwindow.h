@@ -7,6 +7,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QStringList>
+#include <QMovie>
 
 #include "../icreature.h"
 #include "../rng.h"
@@ -24,13 +25,13 @@ class MainWindow : public QMainWindow {
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    bool work;
-    qreal mutation_probability, new_probability;
-    qint32 minpop, maxpop;
+    mutable bool work;
+    mutable qreal mutation_probability, new_probability;
+    mutable qint32 minpop, maxpop;
 
     void SetProgressInfo(quint32 value, bool updateinfo);
 
-    void closeEvent(QCloseEvent * ce);
+    void closeEvent(QCloseEvent *ce);
 
   private slots:
     void on_spin_PopulationMin_valueChanged(int value);
@@ -44,8 +45,12 @@ class MainWindow : public QMainWindow {
 
     void on_spin_PopulationMax_valueChanged(int arg1);
 
+    void on_action_Save_triggered();
+
+    void on_action_Load_triggered();
+
 private:
-    Ui::MainWindow *ui;
+    mutable Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;
 };

@@ -4,8 +4,7 @@
 #include <QObject>
 #include <QtPlugin>
 #include <QtMath>
-//#include <cmath>
-#include <QMessageBox>
+#include <QTime>
 
 #include "../icreature.h"
 #include "../rng.h"

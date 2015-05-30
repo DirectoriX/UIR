@@ -10,9 +10,6 @@
 // Main class for genetic algorithm
 class Population {
   public:
-    // Base ICreature
-   // static ICreature *root;
-
     // Create new ICreature with random parameters
     static void create(void);
 
@@ -51,10 +48,6 @@ class Population {
 
     // Get ICreatures count
     static int count(void);
-
-  private:
-    // Actual sets of some parameters and their efficiency
-  //  static QVector<ICreature *> creatures;
 };
 
 #endif // POPULATION_H

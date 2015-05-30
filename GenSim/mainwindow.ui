@@ -7,11 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>461</width>
-    <height>274</height>
+    <height>285</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>461</width>
+    <height>285</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>461</width>
+    <height>285</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>GenSim</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QWidget" name="formLayoutWidget">
@@ -134,7 +146,7 @@
         <double>0.005000000000000</double>
        </property>
        <property name="value">
-        <double>0.025000000000000</double>
+        <double>0.100000000000000</double>
        </property>
       </widget>
      </item>
@@ -158,7 +170,7 @@
         <double>0.005000000000000</double>
        </property>
        <property name="value">
-        <double>0.005000000000000</double>
+        <double>0.500000000000000</double>
        </property>
       </widget>
      </item>
@@ -172,6 +184,28 @@
       <width>241</width>
       <height>231</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_anim">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>64</width>
+      <height>64</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>16</width>
+      <height>16</height>
+     </size>
+    </property>
+    <property name="lineWidth">
+     <number>1</number>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>
@@ -193,6 +227,10 @@
    <addaction name="action_Reset"/>
   </widget>
   <action name="action_openCreature">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/toolbar-icons/load</normaloff>:/toolbar-icons/load</iconset>
+   </property>
    <property name="text">
     <string>Открыть</string>
    </property>
@@ -207,6 +245,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/toolbar-icons/start</normaloff>:/toolbar-icons/start</iconset>
+   </property>
    <property name="text">
     <string>Запуск</string>
    </property>
@@ -218,6 +260,10 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/toolbar-icons/reset</normaloff>:/toolbar-icons/reset</iconset>
+   </property>
    <property name="text">
     <string>Сброс</string>
    </property>
@@ -226,12 +272,38 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/toolbar-icons/stop</normaloff>:/toolbar-icons/stop</iconset>
+   </property>
    <property name="text">
     <string>Остановить</string>
    </property>
   </action>
+  <action name="action_Load">
+   <property name="text">
+    <string>Загрузить из файла</string>
+   </property>
+   <property name="toolTip">
+    <string>Загрузить параметры популяции чтобы продолжить отбор</string>
+   </property>
+  </action>
+  <action name="action_Save">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/toolbar-icons/save</normaloff>:/toolbar-icons/save</iconset>
+   </property>
+   <property name="text">
+    <string>Сохранить в файл</string>
+   </property>
+   <property name="toolTip">
+    <string>Сохранить параметры популяции чтобы продолжить позже</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections/>
 </ui>

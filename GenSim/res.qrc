@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/toolbar-icons">
+        <file alias="start">Button Play.png</file>
+        <file alias="reset">Button Reload.png</file>
+        <file alias="stop">Button Stop.png</file>
+        <file alias="load">Compass.png</file>
+    </qresource>
+    <qresource prefix="/pics">
+        <file alias="wait">wait.GIF</file>
+    </qresource>
+</RCC>

@@ -42,9 +42,6 @@ void Square::calculate()
   qreal a_i = doubleparams[0] + doubleparams[1] / 2 - M_PI_2;
   square = (d * qSin(a_i) + qSin(doubleparams[1])) / 2;
   perimeter = 3 + qSqrt(1 + d * d - 2 * d * qCos(a_i));
-
-
-
   fitness = square / perimeter;
 }
 
