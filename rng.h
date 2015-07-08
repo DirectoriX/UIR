@@ -5,8 +5,8 @@
 
 class RNG {
   public:
-    static int getint(int min, int max);
-    static int getint(int min, int max, int excluded);
+    static qint32 getint(qint32 min, qint32 max);
+    static qint32 getint(qint32 min, qint32 max, qint32 excluded);
     static qreal getreal();
     static qreal getreal(qreal min, qreal max);
 };

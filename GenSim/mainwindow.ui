@@ -32,7 +32,7 @@
       <x>10</x>
       <y>10</y>
       <width>198</width>
-      <height>171</height>
+      <height>151</height>
      </rect>
     </property>
     <layout class="QFormLayout" name="formLayout">
@@ -74,27 +74,13 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Размеры популяции</string>
+        <string>Минимальный размер</string>
        </property>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLabel" name="label_Population">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>Минимальный</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
       <widget class="QSpinBox" name="spin_PopulationMin">
        <property name="minimum">
         <number>3</number>
@@ -107,14 +93,14 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
-        <string>Максимальный</string>
+        <string>Максимальный размер</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QSpinBox" name="spin_PopulationMax">
        <property name="minimum">
         <number>11</number>
@@ -127,14 +113,14 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>Частота мутаций</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="4" column="1">
       <widget class="QDoubleSpinBox" name="Spin_MutationChance">
        <property name="decimals">
         <number>4</number>
@@ -150,7 +136,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>Вероятность появления
@@ -158,7 +144,7 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="5" column="1">
       <widget class="QDoubleSpinBox" name="Spin_NewChance">
        <property name="decimals">
         <number>4</number>
@@ -278,26 +264,6 @@
    </property>
    <property name="text">
     <string>Остановить</string>
-   </property>
-  </action>
-  <action name="action_Load">
-   <property name="text">
-    <string>Загрузить из файла</string>
-   </property>
-   <property name="toolTip">
-    <string>Загрузить параметры популяции чтобы продолжить отбор</string>
-   </property>
-  </action>
-  <action name="action_Save">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/toolbar-icons/save</normaloff>:/toolbar-icons/save</iconset>
-   </property>
-   <property name="text">
-    <string>Сохранить в файл</string>
-   </property>
-   <property name="toolTip">
-    <string>Сохранить параметры популяции чтобы продолжить позже</string>
    </property>
   </action>
  </widget>

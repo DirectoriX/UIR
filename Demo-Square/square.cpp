@@ -16,7 +16,7 @@ Square *Square::create()
   return new Square();
 }
 
-void Square::initdoubleparam(int number)
+void Square::initdoubleparam(qint32 number)
 {
   if (number > paramcount)
     { return; }

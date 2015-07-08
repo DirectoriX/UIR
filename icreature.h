@@ -4,11 +4,11 @@
 #include <QString>
 #include <QVector>
 #include <QStringList>
-/// NOTE #include <QVariant> - for future development
+#include <QtPlugin>
 
 class ICreature {
   public:
-    int paramcount;
+    qint32 paramcount;
     QString name;
     QStringList paramnames;
 
@@ -21,17 +21,13 @@ class ICreature {
     virtual ICreature *create(void) = 0;
 
     // Set parameter to random value
-    virtual void initdoubleparam(int number) = 0;
+    virtual void initdoubleparam(qint32 number) = 0;
 
     // Calculate fitness
     virtual void calculate(void) = 0;
 
     // For some preparation work, called ony once
     virtual void prepare(void) = 0;
-
-    /// TODO more features
-    ///static const bool threadable;
-    ///QVector<QVariant> values_other;
 };
 
 #define Creature_iid "DirectoriX.UIR.Creature"

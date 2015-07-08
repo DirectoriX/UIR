@@ -3,9 +3,9 @@
 QVector<ICreature *> creatures;
 ICreature *root;
 
-int minsize;
+qint32 minsize;
 
-int ic;
+qint32 ic;
 
 void call(ICreature *&c)
 {
@@ -25,13 +25,13 @@ void Population::create()
   creatures.last()->fitness = 0;
 }
 
-void Population::create(int k)
+void Population::create(qint32 k)
 {
   for (ic = 0; ic < k; ic++)
     { create(); }
 }
 
-void Population::inherit(int parent1, int parent2)
+void Population::crossover(qint32 parent1, qint32 parent2)
 {
   ICreature *last, * p1, *p2;
   creatures.append(last = root->create());
@@ -42,7 +42,7 @@ void Population::inherit(int parent1, int parent2)
     { last->doubleparams[ic] = (RNG::getreal() < 0.5) ? p1->doubleparams[ic] : p2->doubleparams[ic]; }
 }
 
-void Population::mutate(int number, double probability)
+void Population::mutate(qint32 number, qreal probability)
 {
   ICreature *cr = creatures[number];
 
@@ -51,15 +51,14 @@ void Population::mutate(int number, double probability)
       { cr->initdoubleparam(ic); }
 }
 
-void Population::sort()
+void Population::select()
 {
-  for (int i = minsize; i < creatures.count(); i++)    { creatures[i]->calculate(); }
+  for (qint32 i = minsize; i < creatures.count(); i++)    { creatures[i]->calculate(); }
 
-  //  QtConcurrent::blockingMap(creatures, call);
   std::sort(creatures.begin(), creatures.end(), cmp);
 }
 
-QStringList *Population::showinfo(int number)
+QStringList *Population::showinfo(qint32 number)
 {
   ICreature *cr = creatures[number];
   QStringList *result = new QStringList(root->paramnames);
@@ -70,68 +69,6 @@ QStringList *Population::showinfo(int number)
     }
 
   return result;
-}
-
-bool Population::save(QString filename)
-{
-  QFile file(filename);
-
-  if (!file.open(QIODevice::WriteOnly))
-    { return false; }
-
-  QDataStream out(&file);
-  out << root->name;
-  out << creatures.count();
-  ICreature *cr;
-
-  for (int i = 0; i < creatures.count(); i++)
-    {
-      cr = creatures[i];
-
-      for (ic = 0; ic < root->paramcount; ic++)
-        {
-          out << cr->doubleparams[ic];
-        }
-
-      out << cr->fitness;
-    }
-
-  file.flush();
-  file.close();
-  return true;
-}
-
-bool Population::load(QString filename)
-{
-  QFile file(filename);
-
-  if (!file.open(QIODevice::ReadOnly))
-    { return false; }
-
-  QDataStream in(&file);
-  QString name;
-  int count;
-  in >> name >> count;
-
-  if (!(name == root->name))
-    { return false; }
-
-  clear();
-  ICreature *cr;
-
-  for (ic = 0; ic < count; ic++)
-    {
-      creatures.append(cr = root->create());
-
-      for (int i = 0; i < root->paramcount; i++)
-        {
-          in >> cr->doubleparams[i];
-        }
-
-      in >> cr->fitness;
-    }
-
-  return true;
 }
 
 QStringList *Population::getstrings()
@@ -146,9 +83,9 @@ QStringList *Population::getstrings()
   return result;
 }
 
-void Population::shrink(int newcount)
+void Population::shrink(qint32 newcount)
 {
-  int count = creatures.count();
+  qint32 count = creatures.count();
 
   if (count <= newcount)
     { return; }
@@ -176,7 +113,12 @@ void Population::setroot(ICreature *newroot)
   root->prepare();
 }
 
-int Population::count()
+qint32 Population::count()
 {
   return creatures.count();
+}
+
+QString Population::getName()
+{
+  return root->name;
 }

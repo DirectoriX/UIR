@@ -1,20 +1,29 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#if defined(Q_OS_WIN)
+#  define extlib "*.dll"
+#elif defined(Q_OS_LINUX)
+#  define extlib "*.so"
+#else
+#  define extlib "*.!!"
+#endif
+
+
 MainWindow *wnd;
 
 void run(quint32 generation)
 {
-  int i, u, g;
+  qint32 i, u, g;
   QTime t;
   t.start();
-  int maxpop, minpop;
+  qint32 maxpop, minpop, minpop_clear;
   qreal new_probability, mutation_probability;
 
   while (wnd->work)
     {
       maxpop = wnd->maxpop;
-      minpop = wnd->minpop;
+      minpop = minpop_clear = wnd->minpop;
       new_probability = wnd->new_probability;
       mutation_probability = wnd->mutation_probability;
       generation++;
@@ -22,13 +31,14 @@ void run(quint32 generation)
       if (RNG::getreal() < new_probability)
         {
           Population::create();
+          minpop++;
         }
 
       for (i = Population::count(); i < maxpop; i++)
         {
-          u = RNG::getint(0, Population::count());
-          g = RNG::getint(0, Population::count(), u);
-          Population::inherit(u, g);
+          u = RNG::getint(0, minpop);
+          g = RNG::getint(0, minpop, u);
+          Population::crossover(u, g);
         }
 
       for (i = 1; i < maxpop; i++)
@@ -36,19 +46,19 @@ void run(quint32 generation)
           Population::mutate(i, mutation_probability);
         }
 
-      Population::sort();
-      Population::shrink(minpop);
+      Population::select();
+      Population::shrink(minpop_clear);
 
       if (t.elapsed() > 1000)
         {
-          wnd->SetProgressInfo(generation, true);
+          wnd->SetProgressInfo(generation);
           t.start();
         }
     }
 
   while (t.elapsed() < 500) {}
 
-  wnd->SetProgressInfo(generation, true);
+  wnd->SetProgressInfo(generation);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -61,9 +71,6 @@ MainWindow::MainWindow(QWidget *parent) :
   minpop = 10;
   maxpop = 50;
   work = false;
-  //  delete ui->label_anim->movie();
-  //  ui->label_anim->setMovie(new QMovie(":/pics/wait"));
-  //  ui->label_anim->movie()->start();
 }
 
 MainWindow::~MainWindow()
@@ -71,17 +78,13 @@ MainWindow::~MainWindow()
   delete ui;
 }
 
-void MainWindow::SetProgressInfo(quint32 value, bool updateinfo)
+void MainWindow::SetProgressInfo(quint32 value)
 {
   ui->label_GenerationNumber->setText(QString::number(value));
-
-  if (updateinfo)
-    {
-      ui->list_Creatures->clear();
-      QStringList *lptr = Population::getstrings();
-      ui->list_Creatures->addItems(*lptr);
-      delete lptr;
-    }
+  ui->list_Creatures->clear();
+  QStringList *lptr = Population::getstrings();
+  ui->list_Creatures->addItems(*lptr);
+  delete lptr;
 }
 
 void MainWindow::closeEvent(QCloseEvent *ce)
@@ -93,7 +96,7 @@ void MainWindow::closeEvent(QCloseEvent *ce)
     }
 }
 
-void MainWindow::on_spin_PopulationMin_valueChanged(int value)
+void MainWindow::on_spin_PopulationMin_valueChanged(qint32 value)
 {
   ui->spin_PopulationMax->setMinimum(value + 1);
   minpop = value;
@@ -138,7 +141,10 @@ void MainWindow::on_action_openCreature_triggered()
 {
   wnd = this;
 
-  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, tr("?? (*.dll1)"))) != "")
+  QString ext;
+  ext=extlib;
+
+  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, "?? ("+ext+")")) != "")
     {
       if (loader)
         {
@@ -155,6 +161,7 @@ void MainWindow::on_action_openCreature_triggered()
         {
           // Now create new population
           Population::setroot(qobject_cast<ICreature *>(plugin));
+          ui->label_CreatureName->setText(Population::getName());
           on_action_Reset_triggered();
           ui->action_Run->setEnabled(true);
           ui->action_Reset->setEnabled(true);
@@ -174,7 +181,7 @@ void MainWindow::on_list_Creatures_doubleClicked(const QModelIndex &index)
   QStringList *strs = Population::showinfo(index.row());
   QString message;
 
-  for (int i = 0; i < strs->count(); i++)
+  for (qint32 i = 0; i < strs->count(); i++)
     {
       message += strs->at(i) + '\n';
     }
@@ -183,31 +190,18 @@ void MainWindow::on_list_Creatures_doubleClicked(const QModelIndex &index)
   delete strs;
 }
 
-void MainWindow::on_Spin_MutationChance_valueChanged(double arg1)
+void MainWindow::on_Spin_MutationChance_valueChanged(qreal arg1)
 {
   mutation_probability = arg1;
 }
 
-void MainWindow::on_Spin_NewChance_valueChanged(double arg1)
+void MainWindow::on_Spin_NewChance_valueChanged(qreal arg1)
 {
   new_probability = arg1;
 }
 
-void MainWindow::on_spin_PopulationMax_valueChanged(int arg1)
+void MainWindow::on_spin_PopulationMax_valueChanged(qint32 arg1)
 {
   maxpop = arg1;
 }
 
-void MainWindow::on_action_Save_triggered()
-{
-  Population::save("aba.txt");
-}
-
-void MainWindow::on_action_Load_triggered()
-{
-  Population::load("aba.txt");
-  this->ui->list_Creatures->clear();
-  QStringList *lptr = Population::getstrings();
-  ui->list_Creatures->addItems(*lptr);
-  delete lptr;
-}

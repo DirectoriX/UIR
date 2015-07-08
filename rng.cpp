@@ -1,15 +1,15 @@
 #include "rng.h"
 
-int RNG::getint(int min, int max)
+qint32 RNG::getint(qint32 min, qint32 max)
 {
   return (int)(RNG::getreal() * (max - min) + min);
 }
 
-int RNG::getint(int min, int max, int excluded)
+qint32 RNG::getint(qint32 min, qint32 max, qint32 excluded)
 {
   if (excluded > min && excluded < max)
     {
-      int res = RNG::getint(min, max - 1);
+      qint32 res = RNG::getint(min, max - 1);
       return (res >= excluded) ? res + 1 : res;
     }
   else

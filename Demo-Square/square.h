@@ -19,14 +19,14 @@ class Square : public QObject, public ICreature {
     ~Square();
 
     Square *create();
-    void initdoubleparam(int number);
+    void initdoubleparam(qint32 number);
     void calculate();
     void prepare();
 
   private:
     static const qreal min = M_PI / 3, max = M_PI;
     qreal square, perimeter;
-    static int paramcount1;
+    static qint32 paramcount1;
 };
 
 #endif // SQUARE_H
