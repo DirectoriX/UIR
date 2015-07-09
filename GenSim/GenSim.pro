@@ -16,6 +16,9 @@ SOURCES += main.cpp \
     population.cpp \
     ../rng.cpp
 
+TRANSLATIONS += GenSim_en.ts \
+    GenSim_ru.ts
+
 HEADERS  += mainwindow.h \
     population.h \
     ../icreature.h \

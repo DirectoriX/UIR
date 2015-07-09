@@ -8,4 +8,8 @@
     <qresource prefix="/pics">
         <file alias="wait">wait.GIF</file>
     </qresource>
+    <qresource prefix="/translations">
+        <file alias="en">GenSim_en.qm</file>
+        <file alias="ru">GenSim_ru.qm</file>
+    </qresource>
 </RCC>

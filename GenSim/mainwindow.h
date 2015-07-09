@@ -9,6 +9,14 @@
 #include <QStringList>
 #include <QMovie>
 
+#if defined(Q_OS_WIN)
+  #define extlib "*.dll"
+#elif defined(Q_OS_LINUX)
+  #define extlib "*.so"
+#else
+  #define extlib "*.!!"
+#endif
+
 #include "../icreature.h"
 #include "../rng.h"
 #include "population.h"
@@ -44,10 +52,11 @@ class MainWindow : public QMainWindow {
     void on_Spin_NewChance_valueChanged(qreal arg1);
     void on_spin_PopulationMax_valueChanged(qint32 arg1);
 
-private:
+  private:
     mutable Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;
+    QTranslator translator;
 };
 
 #endif // MAINWINDOW_H

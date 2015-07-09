@@ -1,15 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#if defined(Q_OS_WIN)
-#  define extlib "*.dll"
-#elif defined(Q_OS_LINUX)
-#  define extlib "*.so"
-#else
-#  define extlib "*.!!"
-#endif
-
-
 MainWindow *wnd;
 
 void run(quint32 generation)
@@ -140,11 +131,10 @@ void MainWindow::on_action_Reset_triggered()
 void MainWindow::on_action_openCreature_triggered()
 {
   wnd = this;
-
   QString ext;
-  ext=extlib;
+  ext = extlib;
 
-  if ((creature_library = QFileDialog::getOpenFileName(this, "Открыть", NULL, "?? ("+ext+")")) != "")
+  if ((creature_library = QFileDialog::getOpenFileName(this, tr("Открыть"), NULL, "?? (" + ext + ")")) != "")
     {
       if (loader)
         {
@@ -168,7 +158,7 @@ void MainWindow::on_action_openCreature_triggered()
         }
       else
         {
-          QMessageBox(QMessageBox::Warning, "Error", "Not plugin!", QMessageBox::Ok, this).exec();
+          QMessageBox(QMessageBox::Warning, tr("Ошибка"), tr("Это не плагин!"), QMessageBox::Ok, this).exec();
         }
     }
 }
@@ -186,7 +176,7 @@ void MainWindow::on_list_Creatures_doubleClicked(const QModelIndex &index)
       message += strs->at(i) + '\n';
     }
 
-  QMessageBox(QMessageBox::Information, "Info", message, QMessageBox::Ok).exec();
+  QMessageBox(QMessageBox::Information, tr("Информация"), message, QMessageBox::Ok).exec();
   delete strs;
 }
 
