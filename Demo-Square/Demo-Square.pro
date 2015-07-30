@@ -11,11 +11,13 @@ TEMPLATE = lib
 CONFIG += plugin
 
 SOURCES += square.cpp \
-    ../rng.cpp
+    ../rng.cpp \
+    infowindow.cpp
 
 HEADERS += square.h \
     ../icreature.h \
-    ../rng.h
+    ../rng.h \
+    infowindow.h
 
 DISTFILES += Demo-Square.json
 
@@ -23,3 +25,6 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+FORMS += \
+    infowindow.ui

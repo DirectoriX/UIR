@@ -8,23 +8,24 @@ QT       += concurrent core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+CONFIG += qwt
+
 TARGET = GenSim
 TEMPLATE = app
 
 SOURCES += main.cpp \
     mainwindow.cpp \
-    population.cpp \
-    ../rng.cpp
+    ../rng.cpp \
+    tpopulation.cpp
 
-TRANSLATIONS += GenSim_en.ts \
-    GenSim_ru.ts
+TRANSLATIONS += GenSim_ru.ts
 
-HEADERS  += mainwindow.h \
-    population.h \
+HEADERS += mainwindow.h \
     ../icreature.h \
-    ../rng.h
+    ../rng.h \
+    tpopulation.h
 
-FORMS    += mainwindow.ui
+FORMS += mainwindow.ui
 
 RESOURCES += \
     res.qrc
