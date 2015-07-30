@@ -2,7 +2,7 @@
 
 qint32 RNG::getint(qint32 min, qint32 max)
 {
-  return (int)(RNG::getreal() * (max - min) + min);
+  return (int)(RNG::getreal() * (max - min - 1) + min);
 }
 
 qint32 RNG::getint(qint32 min, qint32 max, qint32 excluded)

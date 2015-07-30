@@ -1,13 +1,21 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+///FIXME Commentaries!
+
 #include <QMainWindow>
-#include <QtConcurrent/QtConcurrent>
 #include <QPluginLoader>
 #include <QMessageBox>
 #include <QFileDialog>
-#include <QStringList>
-#include <QMovie>
+#include <QCloseEvent>
+#include <QList>
+#include <QMetaType>
+#include <qwt_plot_curve.h>
+#include <qwt_scale_engine.h>
+#include <qwt_plot_picker.h>
+#include <qwt_picker_machine.h>
+#include <qwt_plot_grid.h>
+#include <qwt_curve_fitter.h>
 
 #if defined(Q_OS_WIN)
   #define extlib "*.dll"
@@ -19,11 +27,10 @@
 
 #include "../icreature.h"
 #include "../rng.h"
-#include "population.h"
+#include "tpopulation.h"
 
 namespace Ui {
   class MainWindow;
-  void run(MainWindow *window, quint32 generation, qint32 minpop, qint32 maxpop, qreal mutation_probability);
 }
 
 class MainWindow : public QMainWindow {
@@ -33,30 +40,65 @@ class MainWindow : public QMainWindow {
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    mutable bool work;
-    mutable qreal mutation_probability, new_probability;
-    mutable qint32 minpop, maxpop;
-
-    void SetProgressInfo(quint32 value);
-
     void closeEvent(QCloseEvent *ce);
 
+    QDialog *iw;
+
   private slots:
+    // \/ ToolButtons
+    void on_toolButton_Open_clicked();
+    void on_toolButton_Reopen_clicked();
+    void on_toolButton_Run_clicked();
+    void on_toolButton_Stop_clicked();
+    void on_toolButton_Reset_clicked();
+    void on_toolButton_Info_clicked(bool checked);
+    void on_toolButton_MultiRun_clicked();
+    // /\ ToolButtons
+
+    // \/ Base settings
     void on_spin_PopulationMin_valueChanged(qint32 value);
-    void on_action_Run_triggered();
-    void on_action_Stop_triggered();
-    void on_action_Reset_triggered();
-    void on_action_openCreature_triggered();
-    void on_list_Creatures_doubleClicked(const QModelIndex &index);
-    void on_Spin_MutationChance_valueChanged(qreal arg1);
-    void on_Spin_NewChance_valueChanged(qreal arg1);
     void on_spin_PopulationMax_valueChanged(qint32 arg1);
+    void on_spin_MutationChance_valueChanged(qreal arg1);
+    void on_checkBox_Decrease_clicked(bool checked);
+    // /\ Base settings
+
+    // \/ Extended settings
+    void on_checkBox_Extended_clicked(bool checked);
+    void on_checkBox_SelectFromNew_clicked(bool checked);
+    void on_checkBox_MutateOnce_clicked(bool checked);
+    void on_checkBox_CreateNew_clicked(bool checked);
+    void on_checkBox_Clear_clicked(bool checked);
+    void on_checkBox_Threadable_clicked(bool checked);
+    // /\ Extended settings
+
+    // \/ Stop conditions
+    void on_checkBox_MaxGeneration_clicked(bool checked);
+    void on_spin_MaxGen_valueChanged(qint32 arg1);
+    void on_checkBox_MaxTime_clicked(bool checked);
+    void on_time_timeChanged(const QTime &time);
+    void on_checkBox_BestResult_clicked(bool checked);
+    void on_spin_f_valueChanged(qreal arg1);
+    // /\ Stop conditions
+
+    // \/ Results
+    void on_list_Creatures_itemSelectionChanged();
+    // /\ Results
+
+    // \/ TPopulation slots
+    void updateResults(quint32 generation, quint32 time, const QList<double> &values);
+    void addPoint(quint32 generation, qreal fitness);
+    void stop(bool requested);
+    // /\ TPopulation slots
+
 
   private:
-    mutable Ui::MainWindow *ui;
+    Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;
-    QTranslator translator;
+    TPopulation p;
+    settings s;
+    QwtPlotCurve curve, histo;
+    QPolygonF poly, poly_m;
 };
 
 #endif // MAINWINDOW_H

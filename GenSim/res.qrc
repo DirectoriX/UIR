@@ -4,12 +4,11 @@
         <file alias="reset">Button Reload.png</file>
         <file alias="stop">Button Stop.png</file>
         <file alias="load">Compass.png</file>
-    </qresource>
-    <qresource prefix="/pics">
-        <file alias="wait">wait.GIF</file>
+        <file alias="fullinfo">Expand.png</file>
+        <file alias="multistart">Button FFW.png</file>
+        <file alias="reopen">Button Undo.png</file>
     </qresource>
     <qresource prefix="/translations">
-        <file alias="en">GenSim_en.qm</file>
-        <file alias="ru">GenSim_ru.qm</file>
+        <file alias="en_EN">GenSim_en.qm</file>
     </qresource>
 </RCC>
