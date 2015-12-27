@@ -330,15 +330,18 @@ void MainWindow::updateResults(quint32 generation, quint32 time, const QList<dou
   ui->label_Time->setText(t.toString(tr("hh:mm:ss.zzz")));
 
   if (!values.isEmpty())
-    { best = values.first(); }
-
-  foreach (qreal v, values)
     {
-      ui->list_Creatures->addItem(QString::number(v, 'g', 9));
-      poly_m << QPointF(++c, (s.increase) ? v / best : best / v);
+      best = values.first();
+
+      foreach (qreal v, values)
+        {
+          ui->list_Creatures->addItem(QString::number(v, 'g', 9));
+          poly_m << QPointF(++c, (s.increase) ? v / best : best / v);
+        }
+
+      histo.setSamples(poly_m);
     }
 
-  histo.setSamples(poly_m);
   ui->toolButton_Info->setChecked(iw->isVisible());
   setWindowTitle("GenSim :: " + ui->label_CreatureName->text() + tr(" :: Поколение ") + ui->label_GenerationNumber->text());
 }
@@ -354,31 +357,29 @@ void MainWindow::stop(bool requested)
   if (!allowed)
     { return; }
 
-//  if (pcount != 0)
-//    {
-//      pcount--;
-//      pop += p.creatures;
-//      p.updateSettings(s, true, false);
-//      p.requestContinue();
-//      poly.clear();
-//      return;
-//    }
-
-//  if (pop.count() != 0)
-//    {
-//      pop += p.creatures;
-//      p.updateSettings(s, true, false);
-//      p.merge(pop);
-//      ui->checkBox_MaxGeneration->setChecked(false);
-//      p.setStopConditions(false, ui->spin_MaxGen->value(),
-//                          ui->checkBox_MaxTime->isChecked(), ui->time->time(),
-//                          ui->checkBox_BestResult->isChecked(), ui->spin_f->value());
-//      pop.clear();
-//      p.requestContinue();
-//      poly.clear();
-//      return;
-//    }
-
+  //  if (pcount != 0)
+  //    {
+  //      pcount--;
+  //      pop += p.creatures;
+  //      p.updateSettings(s, true, false);
+  //      p.requestContinue();
+  //      poly.clear();
+  //      return;
+  //    }
+  //  if (pop.count() != 0)
+  //    {
+  //      pop += p.creatures;
+  //      p.updateSettings(s, true, false);
+  //      p.merge(pop);
+  //      ui->checkBox_MaxGeneration->setChecked(false);
+  //      p.setStopConditions(false, ui->spin_MaxGen->value(),
+  //                          ui->checkBox_MaxTime->isChecked(), ui->time->time(),
+  //                          ui->checkBox_BestResult->isChecked(), ui->spin_f->value());
+  //      pop.clear();
+  //      p.requestContinue();
+  //      poly.clear();
+  //      return;
+  //    }
   ui->toolButton_Open->setEnabled(true);
   ui->toolButton_Reopen->setEnabled(true);
   ui->toolButton_Run->setEnabled(true);
