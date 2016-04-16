@@ -22,12 +22,14 @@ void calc(ICreature *&c)
 
 TPopulation::TPopulation(QObject *parent): QThread(parent)
 {
+  QThreadPool::globalInstance()->reserveThread();
   qsrand(QTime::currentTime().msec());
   abort = false;
   reconfigure = stop = stopRequested = true;
   elapsedTime = generation = 0;
   this->w = wnd;
   root = NULL;
+  QThreadPool::globalInstance()->setMaxThreadCount(QThread::idealThreadCount() - 1);
 }
 
 TPopulation::~TPopulation()
@@ -39,6 +41,7 @@ TPopulation::~TPopulation()
   condition.wakeOne();
   mutex.unlock();
   wait();
+  QThreadPool::globalInstance()->releaseThread();
 }
 
 void TPopulation::updateSettings(const settings &s, bool isReset, bool resetTime)
@@ -128,19 +131,6 @@ QString TPopulation::setRoot(ICreature *newRoot)
   return root->name();
 }
 
-void TPopulation::merge(const QVector<ICreature *> &other)
-{
-  mutex.lock();
-  creatures += other;
-
-  if (increase)
-    { std::sort(creatures.begin(), creatures.end(), cmpi); }
-  else
-    { std::sort(creatures.begin(), creatures.end(), cmpd); }
-
-  mutex.unlock();
-}
-
 qreal TPopulation::difference(qint32 c1, qint32 c2)
 {
   qreal result = 0;
@@ -224,37 +214,36 @@ void TPopulation::run()
 
       if (clear && ((generation % 10) == 1))
         {
-          qint32 c = creatures.count();
+          quint32 c = creatures.count();
+          //if ((creatures[0]->fitness / creatures[c / 2]->fitness) > 0.99995 &&
+          //    (creatures[c / 2]->fitness / creatures[0]->fitness) > 0.99995)
+          {
+            for (ui = 0; ui < c; ui++)
+              {
+                if (qIsNaN(creatures[ui]->fitness))
+                  { continue; }
 
-//          if ((creatures[0]->fitness / creatures[c / 2]->fitness) > 0.99995 &&
-//              (creatures[c / 2]->fitness / creatures[0]->fitness) > 0.99995)
-            {
-              for (ui = 0; ui < c; ui++)
-                {
-                  if (qIsNaN(creatures[ui]->fitness))
-                    { continue; }
+                for (quint32 j = ui + 1; j < c; j++)
+                  {
+                    if (qIsNaN(creatures[j]->fitness))
+                      { continue; }
 
-                  for (quint32 j = ui + 1; j < c; j++)
-                    {
-                      if (qIsNaN(creatures[j]->fitness))
-                        { continue; }
+                    if (
+                      qFuzzyCompare(creatures[ui]->fitness, creatures[j]->fitness) ||
+                      (difference(ui, j) < maxDifference))
+                      { creatures[j]->fitness = NAN; }
+                  }
+              }
 
-                      if (
-                        qFuzzyCompare(creatures[ui]->fitness, creatures[j]->fitness) ||
-                        (difference(ui, j) < maxDifference))
-                        { creatures[j]->fitness = NAN; }
-                    }
-                }
-
-              for (ui = c - 1; ui > 0; ui--)
-                {
-                  if (qIsNaN(creatures[ui]->fitness))
-                    {
-                      delete creatures[ui];
-                      creatures.removeAt(ui);
-                    }
-                }
-            }
+            for (ui = c - 1; ui > 0; ui--)
+              {
+                if (qIsNaN(creatures[ui]->fitness))
+                  {
+                    delete creatures[ui];
+                    creatures.removeAt(ui);
+                  }
+              }
+          }
         }
 
       generation++;
@@ -380,7 +369,7 @@ void TPopulation::run()
           (stopT && stopTime <= elapsedTime) ||
           (stopF &&
            (increase && creatures.first()->fitness >= stopFt ||
-            (!increase && creatures.first()->fitness <= stopFt))
+            !increase && creatures.first()->fitness <= stopFt)
           ))
         {
           stop = true;

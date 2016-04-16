@@ -1,6 +1,7 @@
 #include "square.h"
 
 InfoWindow *iw;
+const qreal min = M_PI / 3, max = M_PI - 0.00001;
 
 Square::Square()
 {
@@ -47,17 +48,16 @@ void Square::calculate()
   square = (d * qSin(a_i) + qSin(realParams[1])) / 2;
   perimeter = 3 + qSqrt(1 + d * d - 2 * d * qCos(a_i));
   fitness = square / perimeter;
-//  for (quint32 i = 0; i < 9999999; i++); ///NOTE This is for delay
 }
 
 void Square::prepare()
 {
-    iw = new InfoWindow();
+  iw = new InfoWindow();
 }
 
 void Square::clean()
 {
-    delete iw;
+  delete iw;
 }
 
 quint32 Square::paramCount()
@@ -88,20 +88,20 @@ void Square::updateInfoWindow()
 
 bool Square::isSimpleMutation()
 {
-    return true;
+  return true;
 }
 
 void Square::mutate(bool onlyOnce, qreal probability)
 {
-    return;
+  return;
 }
 
 bool Square::isSimpleCrossover()
 {
-    return true;
+  return true;
 }
 
 void Square::crossover(ICreature *p1, ICreature *p2)
 {
-    return;
+  return;
 }

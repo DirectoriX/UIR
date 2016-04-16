@@ -3,8 +3,6 @@
 
 ///FIXME Commentaries!
 
-QVector<ICreature *> pop;
-
 bool allowed;
 
 //qint32 pcount;
@@ -55,7 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
   grid->enableXMin(true);
   grid->enableYMin(true);
   grid->attach(ui->plot);
-  //pcount = 0;
 }
 
 MainWindow::~MainWindow()
@@ -114,20 +111,20 @@ void MainWindow::on_toolButton_Open_clicked()
           iw = NULL;
           delete loader;
           loader = NULL;
+          creature_library = "";
         }
     }
 }
 
 void MainWindow::on_toolButton_Reopen_clicked()
 {
-  if (loader)
-    {
-      p.clear();
-      qobject_cast<ICreature *>(loader->instance())->clean();
-      loader->unload();
-      delete loader;
-    }
+  if (creature_library == "")
+    { exit; }
 
+  p.clear();
+  qobject_cast<ICreature *>(loader->instance())->clean();
+  loader->unload();
+  delete loader;
   loader = new QPluginLoader(creature_library);
   QObject *plugin = loader->instance();
 
@@ -150,6 +147,7 @@ void MainWindow::on_toolButton_Reopen_clicked()
       ui->toolButton_Reset->setDisabled(true);
       ui->toolButton_Info->setDisabled(true);
       iw = NULL;
+      creature_library = "";
     }
 }
 
@@ -166,9 +164,6 @@ void MainWindow::on_toolButton_Run_clicked()
 
 void MainWindow::on_toolButton_Stop_clicked()
 {
-  p.merge(pop);
-  pop.clear();
-  //pcount = 0;
   p.requestStop();
   ui->toolButton_Stop->setDisabled(true);
 }

@@ -1,25 +1,30 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-02-18T05:50:58
+# Project created by QtCreator 2016-04-05T16:22:43
 #
 #-------------------------------------------------
 
 QT       += core gui widgets
 
-TARGET = Demo-Square
-TEMPLATE = lib
 CONFIG += plugin
 
-SOURCES += square.cpp \
-    ../rng.cpp \
-    infowindow.cpp
+TARGET = cutter
+TEMPLATE = lib
 
-HEADERS += square.h \
+SOURCES += cutter.cpp \
+    info.cpp \
+    ../rng.cpp \
+    drawfield.cpp \
+    setup.cpp
+
+HEADERS += cutter.h \
+    info.h \
     ../icreature.h \
     ../rng.h \
-    infowindow.h
-
-DISTFILES += Demo-Square.json
+    drawfield.h \
+    descr.h \
+    setup.h
+DISTFILES += cutter.json
 
 unix {
     target.path = /usr/lib
@@ -27,6 +32,7 @@ unix {
 }
 
 FORMS += \
-    infowindow.ui
+    info.ui \
+    setup.ui
 
 CONFIG += c++11

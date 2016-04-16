@@ -42,7 +42,6 @@ class TPopulation : public QThread {
     void requestFullInfo(quint32 index);
     void setStopConditions(bool sgen, quint32 gen, bool stime, const QTime &time, bool sf, qreal f);
     QString setRoot(ICreature *newRoot);
-    void merge(const QVector<ICreature *> &other);
     qreal difference(qint32 c1, qint32 c2);
     void crossover(quint32 parent1, quint32 parent2);
     void clear();

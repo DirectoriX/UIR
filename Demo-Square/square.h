@@ -36,9 +36,7 @@ class Square : public QObject, public ICreature {
     void updateInfo(qreal a, qreal b);
 
   private:
-    static const qreal min = M_PI / 3, max = M_PI - 0.00001;
     qreal square, perimeter;
-    static quint32 paramcount1;
 
 };
 

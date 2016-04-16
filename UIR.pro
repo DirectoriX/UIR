@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS = \
     GenSim \
-    Demo-Square
+    Demo-Square \
+    cutter

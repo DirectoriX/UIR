@@ -4,8 +4,8 @@
 #include <QString>
 #include <QVector>
 #include <QStringList>
-#include <QDialog>
 #include <QtPlugin>
+#include <QDialog>
 
 class ICreature {
   public:

@@ -31,3 +31,5 @@ RESOURCES += \
     res.qrc
 
 RC_ICONS = main.ico
+
+CONFIG += c++11
