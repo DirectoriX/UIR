@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets
+QT       += core gui widgets svg
 
 CONFIG += plugin
 
@@ -36,3 +36,6 @@ FORMS += \
     setup.ui
 
 CONFIG += c++11
+
+RESOURCES += \
+    pics.qrc

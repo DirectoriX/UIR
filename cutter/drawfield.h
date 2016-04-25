@@ -17,7 +17,6 @@ class DrawField : public QWidget {
     void setRects(QVector<detail> *details);
     void setBorders(qreal width, qreal height);
     void setFreeSpace(qreal x, qreal y);
-    void setTypes(QVector<detailType> *types);
 
   private:
     qreal realwidth, realheight;

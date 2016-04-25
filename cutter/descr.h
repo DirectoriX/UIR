@@ -2,6 +2,7 @@
 #define DESCR_H
 
 #include <QVector>
+#include <QColor>
 
 struct detailType
 {

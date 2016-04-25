@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd" [<!ENTITY mathml 'http://www.w3.org/1998/Math/MathML'>]>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>Squares</title>
+<!-- MathML created with MathCast Equation Editor version 0.92 -->
+</head>
+<body>
+<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle mathsize="2em"><mrow>
+    <mi>S</mi>
+    <mo>=</mo>
+    <mfrac>
+      <mrow>
+        <mi>A</mi>
+        <mo>&#xb7;</mo>
+        <mi>B</mi>
+      </mrow>
+      <mn>2</mn>
+    </mfrac>
+    <mo>&#xb7;</mo>
+    <mi>&#x3c0;</mi>
+  </mrow></mstyle>
+  
+</math><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle mathsize="2em"><mrow>
+    <mi>S</mi>
+    <mo>=</mo>
+    <mfrac>
+      <mrow>
+        <mi>A</mi>
+        <mo>&#xb7;</mo>
+        <mi>h</mi>
+      </mrow>
+      <mn>2</mn>
+    </mfrac>
+  </mrow></mstyle>
+  
+</math><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle mathsize="2em"><mrow>
+    <mi>S</mi>
+    <mo>=</mo>
+    <mi>A</mi>
+    <mo>&#xb7;</mo>
+    <mi>h</mi>
+  </mrow></mstyle>
+  
+</math><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><mstyle mathsize="2em"><mrow>
+    <mi>S</mi>
+    <mo>=</mo>
+    <mfrac>
+      <mrow>
+        <mi>A</mi>
+        <mo>+</mo>
+        <mi>B</mi>
+      </mrow>
+      <mn>2</mn>
+    </mfrac>
+    <mo>&#xb7;</mo>
+    <mi>h</mi>
+  </mrow></mstyle>
+  
+</math></body>
+</html>

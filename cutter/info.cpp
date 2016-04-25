@@ -13,11 +13,6 @@ info::~info()
   delete ui;
 }
 
-void info::setTypes(QVector<detailType> *types)
-{
-  ui->field->setTypes(types);
-}
-
 void info::setFieldSize(qreal width, qreal height)
 {
   qreal cx, cy;

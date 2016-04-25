@@ -368,8 +368,8 @@ void TPopulation::run()
       if ((stopG && generation >= stopGen) ||
           (stopT && stopTime <= elapsedTime) ||
           (stopF &&
-           (increase && creatures.first()->fitness >= stopFt ||
-            !increase && creatures.first()->fitness <= stopFt)
+           ((increase && (creatures.first()->fitness >= stopFt)) ||
+            (!increase && (creatures.first()->fitness <= stopFt)))
           ))
         {
           stop = true;

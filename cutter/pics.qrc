@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/pics">
+        <file alias="ell">pics/ellipse.svg</file>
+        <file alias="par">pics/parall.svg</file>
+        <file alias="tra">pics/trapez.svg</file>
+        <file alias="tre">pics/triangle.svg</file>
+    </qresource>
+</RCC>

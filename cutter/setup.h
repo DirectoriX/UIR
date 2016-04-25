@@ -20,13 +20,15 @@ class setup : public QDialog {
     qreal getHeight();
     QVector<quint32> *getCount();
     quint8 getMode();
+    qreal getSquare();
 
   private slots:
     void on_pushButton_clicked();
-
     void on_setup_rejected();
+    void on_tabWidget_currentChanged(int index);
+    void on_fileButton_clicked();
 
-private:
+  private:
     Ui::setup *ui;
 };
 

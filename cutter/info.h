@@ -17,7 +17,6 @@ class info : public QDialog {
     ~info();
 
   public slots:
-    void setTypes(QVector<detailType> *types);
     void setFieldSize(qreal width, qreal height);
     void setRects(QVector<detail> *details, qreal w, qreal h, qreal freex, qreal freey);
 

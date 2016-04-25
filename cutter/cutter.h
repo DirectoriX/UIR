@@ -31,7 +31,6 @@ class cutter : public QObject, public ICreature {
     QVector<qint32> details;
 
   signals:
-    void setTypes(QVector<detailType> *types);
     void setFieldSize(qreal width, qreal height);
     void setRects(QVector<detail> *details, qreal w, qreal h, qreal freex, qreal freey);
 
@@ -40,7 +39,7 @@ class cutter : public QObject, public ICreature {
 
     QVector<place> places;
     QVector<detail> list;
-    qreal totalwidth, totalheight, square, freex, freey;
+    qreal totalwidth, totalheight, freex, freey;
 };
 
 #endif // CUTTER_H

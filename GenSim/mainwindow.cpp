@@ -119,7 +119,7 @@ void MainWindow::on_toolButton_Open_clicked()
 void MainWindow::on_toolButton_Reopen_clicked()
 {
   if (creature_library == "")
-    { exit; }
+    { return; }
 
   p.clear();
   qobject_cast<ICreature *>(loader->instance())->clean();

@@ -11,8 +11,9 @@ QVector<detailType> types;
 QVector<qint32> detailSet;
 qint8 mode = 3;
 bool hasfree = true;
-qint32 typecount, detailCount;
+quint32 typecount, detailCount;
 qreal maxwidth, maxheight;
+qreal square;
 
 bool cmpRange(place a, place b)
 {
@@ -48,6 +49,8 @@ bool cmpRange(place a, place b)
       case 8:
         return false;
     }
+
+  return false;
 }
 
 cutter::cutter()
@@ -71,7 +74,7 @@ cutter::cutter()
     }
 
   places.append(place{ 0, 0, maxwidth, maxheight });
-  totalwidth = totalheight = square = freex = freey = 0;
+  totalwidth = totalheight = freex = freey = 0;
 }
 
 cutter::~cutter()
@@ -105,7 +108,7 @@ void cutter::mutate(bool onlyOnce, qreal probability)
     }
   else
     {
-      for (quint32 i = 0; i < RNG::getreal() * probability * detailCount; i++)
+      for (quint32 i = 0; i < RNG::getreal() * probability * detailCount * 2; i++)
         {
           if (RNG::getreal() < 0.5)
             { details[RNG::getint(0, detailCount)] *= -1; }
@@ -128,7 +131,7 @@ void cutter::crossover(ICreature *p1, ICreature *p2)
   pT2 = (cutter *)p2;
   details = QVector<qint32>(pT1->details);
   QVector<qint32> p2d = QVector<qint32>(pT2->details);
-  qint32 i;
+  quint32 i;
 
   for (i = 0; i < detailCount; i++)
     {
@@ -168,10 +171,10 @@ void cutter::calculate()
   list.clear();
   places.clear();
   places.append(place{ 0, 0, maxwidth, maxheight });
-  totalwidth = totalheight = square = freex = freey = 0;
+  totalwidth = totalheight = freex = freey = 0;
   bool success = true;
 
-  for (qint32 i = 0; i < detailCount; i++)
+  for (quint32 i = 0; i < detailCount; i++)
     { success &= addRect(details[i]); }
 
   qreal totalsquare = totalwidth * totalheight;
@@ -211,12 +214,11 @@ void cutter::prepare()
 
   mode = s->getMode();
   hasfree = (mode == 2 || mode == 3 || mode == 4 || mode == 6 || mode == 8);
+  square = s->getSquare();
   delete s;
   detailCount = detailSet.count();
   connect(this, SIGNAL(setFieldSize(qreal, qreal)), w, SLOT(setFieldSize(qreal, qreal)));
-  connect(this, SIGNAL(setTypes(QVector<detailType> *)), w, SLOT(setTypes(QVector<detailType> *)));
   emit setFieldSize(maxwidth, maxheight);
-  emit setTypes(&types);
 }
 
 void cutter::clean()
@@ -286,28 +288,11 @@ bool cutter::addRect(qint32 type)
       freey = totalheight;
     }
 
-  list.append(detail{ x, y, width, height, type, swap });
-  square += width * height;
+  list.append(detail{ x, y, width, height, (quint32)type, swap });
   places.append(place{ 0, totalheight, maxwidth, maxheight - totalheight });
   places.append(place{ totalwidth, 0, maxwidth - totalwidth, maxheight });
   places.append(place{ x + width, y, maxwidth - x - width, maxheight - y });
   places.append(place{ x, y + height, maxwidth - x, maxheight - y - height });
-
-  // Правим наибольшие доступные размеры и удаляем лишние точки
-  //  for (i = 0; i < places.count() - 1; i++)
-  //    {
-  //      if (places[i].x <= x && places[i].y >= y && places[i].y < y + height)
-  //        { places[i].maxx = qMin(places[i].maxx, x - places[i].x); }
-
-  //      if (places[i].y <= y && places[i].x >= x && places[i].x < x + width)
-  //        { places[i].maxy = qMin(places[i].maxy, y - places[i].y); }
-
-  //      if (places[i].x >= x && places[i].x <= x + width &&
-  //          places[i].y >= y && places[i].y <= y + height)
-  //        {
-  //          places[i].maxx = places[i].maxy = 0;
-  //        }
-  //    }
 
   for (i = places.count() - 1; i >= 0; i--)
     {
@@ -330,7 +315,7 @@ bool cutter::addRect(qint32 type)
 
       bool keep = false;
 
-      for (qint32 j = 0; j < typecount; j++)
+      for (quint32 j = 0; j < typecount; j++)
         {
           keep |= (places[i].maxx >= types[j].width && places[i].maxy >= types[j].height) ||
                   (places[i].maxx >= types[j].height && places[i].maxy >= types[j].width);
@@ -343,23 +328,20 @@ bool cutter::addRect(qint32 type)
         }
     }
 
-  //  for (i = places.count() - 1; i >= 0; i--)
-  //    {
-  //      bool keep = false;
-  //      place p = places[i];
-  //      for (qint32 j = 0; j < typecount; j++)
-  //        {
-  //          keep |= (p.maxx >= types[j].width && p.maxy >= types[j].height) ||
-  //                  (p.maxx >= types[j].height && p.maxy >= types[j].width);
-  //        }
-  //      if (!keep)
-  //        {
-  //          places.remove(i);
-  //          continue;
-  //        }
-  //    }
-  //  places.append(place{ x + width, y, maxx - width, maxy });
-  //  places.append(place{ x, y + height, maxx, maxy - height });
+  if (mode == 7 || mode == 8)
+    {
+      quint32 m = places.count();
+      quint32 i;
+
+      while (m)
+        {
+          i = qFloor(RNG::getreal() * m--);
+          qSwap(places[m], places[i]);
+        }
+
+      return true;
+    }
+
   std::sort(places.begin(), places.end(), cmpRange);
   return true;
 }

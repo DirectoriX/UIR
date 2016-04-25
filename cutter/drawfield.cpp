@@ -4,8 +4,6 @@
 
 #include "info.h"
 
-QVector<detailType> detailTypes;
-
 DrawField::DrawField(QWidget *parent) : QWidget(parent)
 {
   rects = QVector<place>();
@@ -14,6 +12,7 @@ DrawField::DrawField(QWidget *parent) : QWidget(parent)
 
 void DrawField::paintEvent(QPaintEvent *pe)
 {
+  pe->accept();
   QPainter painter(this);
   // Очистка
   painter.setBrush(Qt::white);
@@ -86,9 +85,4 @@ void DrawField::setFreeSpace(qreal x, qreal y)
 {
   freex = x;
   freey = y;
-}
-
-void DrawField::setTypes(QVector<detailType> *types)
-{
-  detailTypes = *types;
 }
