@@ -118,6 +118,8 @@ void MainWindow::on_toolButton_Open_clicked()
 
 void MainWindow::on_toolButton_Reopen_clicked()
 {
+  ui->list_Creatures->clearSelection();
+
   if (creature_library == "")
     { return; }
 
@@ -207,6 +209,11 @@ void MainWindow::on_spin_MutationChance_valueChanged(qreal arg1)
 {
   s.probabilityMutation = arg1;
   p.updateSettings(s, false);
+}
+
+void MainWindow::on_prob_2_clicked()
+{
+  ui->spin_MutationChance->setValue(ui->spin_MutationChance->value() / 2);
 }
 
 void MainWindow::on_checkBox_Decrease_clicked(bool checked)
@@ -343,6 +350,16 @@ void MainWindow::updateResults(quint32 generation, quint32 time, const QList<dou
 
 void MainWindow::addPoint(quint32 generation, qreal fitness)
 {
+  if (!poly.isEmpty())
+    {
+      qint32 ccc = poly.last().x();
+      qint32 pok = qLn(ccc) / qLn(10);
+      qint32 man = ccc / qPow(10, pok);
+
+      if (poly.last().x() != qPow(10, pok)*man)
+        { poly.removeLast(); }
+    }
+
   poly << QPointF(generation, fitness);
   curve.setSamples(poly);
 }

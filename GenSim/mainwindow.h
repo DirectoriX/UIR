@@ -58,6 +58,7 @@ class MainWindow : public QMainWindow {
     void on_spin_PopulationMin_valueChanged(qint32 value);
     void on_spin_PopulationMax_valueChanged(qint32 arg1);
     void on_spin_MutationChance_valueChanged(qreal arg1);
+    void on_prob_2_clicked();
     void on_checkBox_Decrease_clicked(bool checked);
     // /\ Base settings
 
@@ -89,8 +90,7 @@ class MainWindow : public QMainWindow {
     void stop(bool requested);
     // /\ TPopulation slots
 
-
-  private:
+private:
     Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;

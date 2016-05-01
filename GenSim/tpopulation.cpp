@@ -187,6 +187,9 @@ void TPopulation::run()
 
       if (stop)
         {
+          if (!creatures.isEmpty())
+            { emit addPoint(generation, creatures[0]->fitness); }
+
           emit stopped(stopRequested);
           condition.wait(&mutex);
           stop = false;

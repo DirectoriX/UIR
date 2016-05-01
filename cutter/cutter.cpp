@@ -47,7 +47,9 @@ bool cmpRange(place a, place b)
 
       case 7:
       case 8:
-        return false;
+      {
+        return (a.maxx * a.maxy != b.maxx * b.maxy) ? a.maxx * a.maxy < b.maxx * b.maxy : ((a.y != b.y) ? a.y < b.y : a.x < b.x); // По площади
+      }
     }
 
   return false;
@@ -108,15 +110,17 @@ void cutter::mutate(bool onlyOnce, qreal probability)
     }
   else
     {
-      for (quint32 i = 0; i < RNG::getreal() * probability * detailCount * 2; i++)
+      for (qint32 i = 0; i < detailCount ; i++)
         {
-          if (RNG::getreal() < 0.5)
-            { details[RNG::getint(0, detailCount)] *= -1; }
-          else
+          if (RNG::getreal() < probability)
             {
-              qint32 c1 = RNG::getint(0, detailCount);
-              qint32 c2 = RNG::getint(0, detailCount, c1);
-              qSwap(c1, c2);
+              if (RNG::getreal() < 0.5)
+                { details[i] *= -1; }
+              else
+                {
+                  qint32 c2 = RNG::getint(0, detailCount, i);
+                  qSwap(i, c2);
+                }
             }
         }
     }
@@ -173,9 +177,14 @@ void cutter::calculate()
   places.append(place{ 0, 0, maxwidth, maxheight });
   totalwidth = totalheight = freex = freey = 0;
   bool success = true;
+  quint32 dc = 0;
 
   for (quint32 i = 0; i < detailCount; i++)
-    { success &= addRect(details[i]); }
+    {
+      bool s = addRect(details[i]);
+      success &= s;
+      dc += s ? 1 : 0;
+    }
 
   qreal totalsquare = totalwidth * totalheight;
   qreal freesquare;
@@ -187,7 +196,7 @@ void cutter::calculate()
   fitness = square / (totalsquare - freesquare);
 
   if (!success)
-    { fitness -= 1; }
+    { fitness = 1.0 * dc - detailCount; }
 
   places.clear();
 }
@@ -240,7 +249,7 @@ void cutter::updateInfoWindow()
 
 bool cutter::addRect(qint32 type)
 {
-  qreal x, y, width, height;
+  qreal x = 0.0, y = 0.0, width, height;
   bool swap = type < 0;
   type = qAbs(type) - 1;
   width = types[type].width;
@@ -329,18 +338,7 @@ bool cutter::addRect(qint32 type)
     }
 
   if (mode == 7 || mode == 8)
-    {
-      quint32 m = places.count();
-      quint32 i;
-
-      while (m)
-        {
-          i = qFloor(RNG::getreal() * m--);
-          qSwap(places[m], places[i]);
-        }
-
-      return true;
-    }
+    { return true; }
 
   std::sort(places.begin(), places.end(), cmpRange);
   return true;

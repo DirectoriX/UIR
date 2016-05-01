@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>781</width>
-    <height>435</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>781</width>
-    <height>435</height>
+    <height>431</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>781</width>
-    <height>435</height>
+    <height>431</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -163,11 +163,22 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="checkBox_Decrease">
-         <property name="text">
-          <string>Меньше - лучше</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QCheckBox" name="checkBox_Decrease">
+           <property name="text">
+            <string>Меньше - лучше</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="prob_2">
+           <property name="text">
+            <string>↑/=2</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QCheckBox" name="checkBox_Extended">
