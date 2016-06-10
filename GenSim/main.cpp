@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   systranslator.load("qt_" + locale, syspath);
   a.installTranslator(&systranslator);
 
-  translator.load(QString("GenSim_") + locale, "translations");
+  translator.load(QString("GeneticSim_") + locale, "translations");
   a.installTranslator(&translator);
 
   MainWindow w;

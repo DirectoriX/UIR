@@ -26,7 +26,6 @@
 #endif
 
 #include "../icreature.h"
-#include "../rng.h"
 #include "tpopulation.h"
 
 namespace Ui {
@@ -90,7 +89,7 @@ class MainWindow : public QMainWindow {
     void stop(bool requested);
     // /\ TPopulation slots
 
-private:
+  private:
     Ui::MainWindow *ui;
     QString creature_library;
     QPluginLoader *loader = NULL;

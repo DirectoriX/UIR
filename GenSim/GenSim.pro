@@ -10,7 +10,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += qwt
 
-TARGET = GenSim
+TARGET = GeneticSim
 TEMPLATE = app
 
 SOURCES += main.cpp \
@@ -18,7 +18,7 @@ SOURCES += main.cpp \
     ../rng.cpp \
     tpopulation.cpp
 
-TRANSLATIONS += GenSim_ru.ts
+TRANSLATIONS += GeneticSim_ru.ts
 
 HEADERS += mainwindow.h \
     ../icreature.h \

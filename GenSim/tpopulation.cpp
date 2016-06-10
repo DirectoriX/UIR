@@ -8,8 +8,6 @@ QDialog *wnd;
 
 const qreal maxDifference = 0.0015;
 
-///FIXME Commentaries!
-
 bool cmpi(ICreature *i, ICreature *j) { return (i->fitness > j->fitness); }
 
 bool cmpd(ICreature *i, ICreature *j) { return (i->fitness < j->fitness); }

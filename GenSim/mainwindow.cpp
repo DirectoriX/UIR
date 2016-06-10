@@ -345,7 +345,7 @@ void MainWindow::updateResults(quint32 generation, quint32 time, const QList<dou
     }
 
   ui->toolButton_Info->setChecked(iw->isVisible());
-  setWindowTitle("GenSim :: " + ui->label_CreatureName->text() + tr(" :: Поколение ") + ui->label_GenerationNumber->text());
+  setWindowTitle("GeneticSim :: " + ui->label_CreatureName->text() + tr(" :: Поколение ") + ui->label_GenerationNumber->text());
 }
 
 void MainWindow::addPoint(quint32 generation, qreal fitness)
