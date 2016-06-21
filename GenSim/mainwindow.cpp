@@ -1,11 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-///FIXME Commentaries!
-
+// Разрешено ли обрабатывать нажатия кнопок
+// Они зачем-то обрабатываются при старте программы...
 bool allowed;
-
-//qint32 pcount;
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -13,11 +11,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
   allowed = false;
   ui->setupUi(this);
-  qRegisterMetaType<QList<double> /**/>(); /// NOTE "double" is because of buggy QMetaType system, "qreal" simply doesn't work
+  qRegisterMetaType<QList<double> /**/>(); /// NOTE "double" потому, что QMetaType не может использовать "qreal"
+  // Связываемся с TPopulation
   connect(&p, SIGNAL(updateView(quint32, quint32, QList<double>)), this, SLOT(updateResults(quint32, quint32, QList<double>)));
   connect(&p, SIGNAL(addPoint(quint32, qreal)), this, SLOT(addPoint(quint32, qreal)));
   connect(&p, SIGNAL(stopped(bool)), this, SLOT(stop(bool)));
   p.start();
+  // Настройки по умолчанию
   s.populationMax = 50;
   s.populationMin = 10;
   s.probabilityMutation = 0.1;
@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
   s.clear = true;
   s.threadable = false;
   s.increase = true;
+  // Настройки графиков
   curve.setPen(Qt::darkBlue, 2);
   curve.setRenderHint(QwtPlotItem::RenderAntialiased, true);
   curve.setSamples(poly);
@@ -62,6 +63,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::closeEvent(QCloseEvent *ce)
 {
+  // При закрытии - явно остановить поток расчёта
   p.requestAbort();
 
   if (iw) { iw->close(); }
@@ -70,13 +72,17 @@ void MainWindow::closeEvent(QCloseEvent *ce)
 }
 
 // \/ ToolButtons
+
+// Открытие файла плагина
 void MainWindow::on_toolButton_Open_clicked()
 {
-  QString ext;
-  ext = extlib;
+  // Расширение файла зависит от ОС, поэтому используем макрос
+  QString ext = extlib;
 
+  // Получаем имя файла плагина
   if ((creature_library = QFileDialog::getOpenFileName(this, tr("Открыть"), NULL, "?? (" + ext + ")")) != "")
     {
+      // Если уже открывали плагин - чистим
       if (loader)
         {
           p.clear();
@@ -88,9 +94,10 @@ void MainWindow::on_toolButton_Open_clicked()
       loader = new QPluginLoader(creature_library);
       QObject *plugin = loader->instance();
 
+      // Если открыли именно файл плагина, а не случайную библиотеку
       if (plugin)
         {
-          // Now create new population
+          // Настраиваем TPopulation
           ui->label_CreatureName->setText(p.setRoot(qobject_cast<ICreature *>(plugin)));
           iw = p.w;
           on_toolButton_Reset_clicked();
@@ -116,6 +123,7 @@ void MainWindow::on_toolButton_Open_clicked()
     }
 }
 
+// Установка новых параметров плагина. Выполняется как переоткрытие файла плагина
 void MainWindow::on_toolButton_Reopen_clicked()
 {
   ui->list_Creatures->clearSelection();
@@ -132,7 +140,7 @@ void MainWindow::on_toolButton_Reopen_clicked()
 
   if (plugin)
     {
-      // Now create new population
+      // Настраиваем TPopulation
       ui->label_CreatureName->setText(p.setRoot(qobject_cast<ICreature *>(plugin)));
       iw = p.w;
       on_toolButton_Reset_clicked();
@@ -153,6 +161,7 @@ void MainWindow::on_toolButton_Reopen_clicked()
     }
 }
 
+// Запуск поиска решения
 void MainWindow::on_toolButton_Run_clicked()
 {
   ui->toolButton_Open->setDisabled(true);
@@ -164,12 +173,14 @@ void MainWindow::on_toolButton_Run_clicked()
   p.requestContinue();
 }
 
+// Остановка поиска решения
 void MainWindow::on_toolButton_Stop_clicked()
 {
   p.requestStop();
   ui->toolButton_Stop->setDisabled(true);
 }
 
+// Очистка популяции для поиска решения с самого начала
 void MainWindow::on_toolButton_Reset_clicked()
 {
   ui->list_Creatures->clearSelection();
@@ -182,6 +193,7 @@ void MainWindow::on_toolButton_Reset_clicked()
                       ui->checkBox_BestResult->isChecked(), ui->spin_f->value());
 }
 
+// Открытие\закрытие окна с подробной информацией
 void MainWindow::on_toolButton_Info_clicked(bool checked)
 {
   if (checked)
@@ -190,7 +202,7 @@ void MainWindow::on_toolButton_Info_clicked(bool checked)
 }
 // /\ ToolButtons
 
-// \/ Base settings
+// \/ Базовые настройки
 void MainWindow::on_spin_PopulationMin_valueChanged(qint32 value)
 {
   ui->spin_PopulationMax->setMinimum(value + 2);
@@ -211,19 +223,22 @@ void MainWindow::on_spin_MutationChance_valueChanged(qreal arg1)
   p.updateSettings(s, false);
 }
 
+// Делим вероятность мутаций на 2
 void MainWindow::on_prob_2_clicked()
 {
   ui->spin_MutationChance->setValue(ui->spin_MutationChance->value() / 2);
 }
 
+// Порядок сортировки
+// Ищем максимум или минимум
 void MainWindow::on_checkBox_Decrease_clicked(bool checked)
 {
   s.increase = !checked;
   p.updateSettings(s, false);
 }
-// /\ Base settings
+// /\ Базовые настройки
 
-// \/ Extended settings
+// \/ Расширенные настройки
 void MainWindow::on_checkBox_Extended_clicked(bool checked)
 {
   ui->frame->setVisible(checked);
@@ -258,9 +273,9 @@ void MainWindow::on_checkBox_Threadable_clicked(bool checked)
   s.threadable = checked;
   p.updateSettings(s, false);
 }
-// /\ Extended settings
+// /\ Расширенные настройки
 
-// \/ Stop conditions
+// \/ Условия останова
 void MainWindow::on_checkBox_MaxGeneration_clicked(bool checked)
 {
   p.setStopConditions(checked, ui->spin_MaxGen->value(),
@@ -302,17 +317,20 @@ void MainWindow::on_spin_f_valueChanged(qreal arg1)
                       ui->checkBox_MaxTime->isChecked(), ui->time->time(),
                       ui->checkBox_BestResult->isChecked(), arg1);
 }
-// /\ Stop conditions
+// /\ Условия останова
 
-// \/ Results
+// \/ Результаты
+
+// Выбрали другое существо, надо обновить информацию в окне...
 void MainWindow::on_list_Creatures_itemSelectionChanged()
 {
+  // ... но только если поиск решения не выполняется в данный момент
   if (ui->toolButton_Run->isEnabled())
     { p.requestFullInfo(ui->list_Creatures->currentRow()); }
 }
-// /\ Results
+// /\ Результаты
 
-// \/ TPopulation slots
+// \/ Слоты TPopulation
 void MainWindow::updateResults(quint32 generation, quint32 time, const QList<double> &values)
 {
   ui->label_GenerationNumber->setText(QString::number(generation));
@@ -369,29 +387,6 @@ void MainWindow::stop(bool requested)
   if (!allowed)
     { return; }
 
-  //  if (pcount != 0)
-  //    {
-  //      pcount--;
-  //      pop += p.creatures;
-  //      p.updateSettings(s, true, false);
-  //      p.requestContinue();
-  //      poly.clear();
-  //      return;
-  //    }
-  //  if (pop.count() != 0)
-  //    {
-  //      pop += p.creatures;
-  //      p.updateSettings(s, true, false);
-  //      p.merge(pop);
-  //      ui->checkBox_MaxGeneration->setChecked(false);
-  //      p.setStopConditions(false, ui->spin_MaxGen->value(),
-  //                          ui->checkBox_MaxTime->isChecked(), ui->time->time(),
-  //                          ui->checkBox_BestResult->isChecked(), ui->spin_f->value());
-  //      pop.clear();
-  //      p.requestContinue();
-  //      poly.clear();
-  //      return;
-  //    }
   ui->toolButton_Open->setEnabled(true);
   ui->toolButton_Reopen->setEnabled(true);
   ui->toolButton_Run->setEnabled(true);
@@ -405,4 +400,4 @@ void MainWindow::stop(bool requested)
 
   p.requestUpdate();
 }
-// /\ TPopulation slots
+// /\ Слоты TPopulation

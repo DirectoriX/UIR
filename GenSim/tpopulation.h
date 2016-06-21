@@ -1,8 +1,6 @@
 #ifndef TPOPULATION_H
 #define TPOPULATION_H
 
-///FIXME Commentaries!
-
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
@@ -35,20 +33,16 @@ class TPopulation : public QThread {
     ~TPopulation();
 
     void updateSettings(const settings &s, bool isReset, bool resetTime = true);
-    void requestUpdate(void);
-    void requestStop(void);
-    void requestContinue(void);
-    void requestAbort(void);
+    void clear();
+    void requestUpdate();
+    void requestStop();
+    void requestContinue();
+    void requestAbort();
     void requestFullInfo(quint32 index);
     void setStopConditions(bool sgen, quint32 gen, bool stime, const QTime &time, bool sf, qreal f);
     QString setRoot(ICreature *newRoot);
-    qreal difference(qint32 c1, qint32 c2);
-    void crossover(quint32 parent1, quint32 parent2);
-    void clear();
 
     QDialog *w;
-    QVector<ICreature *> creatures;
-    bool stop;
 
   signals:
     void updateView(quint32 generation, quint32 time, const QList<double> &values);
@@ -67,6 +61,11 @@ class TPopulation : public QThread {
     QList<double> values;
     settings s;
     QTime t;
+    QVector<ICreature *> creatures;
+    bool stop;
+
+    qreal difference(qint32 c1, qint32 c2);
+    void crossover(quint32 parent1, quint32 parent2);
 };
 
 #endif // TPOPULATION_H

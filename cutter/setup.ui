@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Параметры раскроя</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -728,7 +728,7 @@
        </palette>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <item>
        <property name="text">
@@ -742,27 +742,12 @@
       </item>
       <item>
        <property name="text">
-        <string>Диагональю</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Сектором</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
         <string>Строками и столбцами</string>
        </property>
       </item>
       <item>
        <property name="text">
         <string>Квадратом</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Обрезком</string>
        </property>
       </item>
       <item>
@@ -1205,7 +1190,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Их файла</string>
+    <string>Из файла</string>
    </property>
   </widget>
   <zorder>tabWidget</zorder>

@@ -53,41 +53,41 @@ class MainWindow : public QMainWindow {
     void on_toolButton_Info_clicked(bool checked);
     // /\ ToolButtons
 
-    // \/ Base settings
+    // \/ Базовые настройки
     void on_spin_PopulationMin_valueChanged(qint32 value);
     void on_spin_PopulationMax_valueChanged(qint32 arg1);
     void on_spin_MutationChance_valueChanged(qreal arg1);
     void on_prob_2_clicked();
     void on_checkBox_Decrease_clicked(bool checked);
-    // /\ Base settings
+    // /\ Базовые настройки
 
-    // \/ Extended settings
+    // \/ Расширенные настройки
     void on_checkBox_Extended_clicked(bool checked);
     void on_checkBox_SelectFromNew_clicked(bool checked);
     void on_checkBox_MutateOnce_clicked(bool checked);
     void on_checkBox_CreateNew_clicked(bool checked);
     void on_checkBox_Clear_clicked(bool checked);
     void on_checkBox_Threadable_clicked(bool checked);
-    // /\ Extended settings
+    // /\ Расширенные настройки
 
-    // \/ Stop conditions
+    // \/ Условия останова
     void on_checkBox_MaxGeneration_clicked(bool checked);
     void on_spin_MaxGen_valueChanged(qint32 arg1);
     void on_checkBox_MaxTime_clicked(bool checked);
     void on_time_timeChanged(const QTime &time);
     void on_checkBox_BestResult_clicked(bool checked);
     void on_spin_f_valueChanged(qreal arg1);
-    // /\ Stop conditions
+    // /\ Условия останова
 
-    // \/ Results
+    // \/ Результаты
     void on_list_Creatures_itemSelectionChanged();
-    // /\ Results
+    // /\ Результаты
 
-    // \/ TPopulation slots
+    // \/ Слоты TPopulation
     void updateResults(quint32 generation, quint32 time, const QList<double> &values);
     void addPoint(quint32 generation, qreal fitness);
     void stop(bool requested);
-    // /\ TPopulation slots
+    // /\ Слоты TPopulation
 
   private:
     Ui::MainWindow *ui;

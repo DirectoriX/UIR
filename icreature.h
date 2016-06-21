@@ -9,16 +9,16 @@
 
 class ICreature {
   public:
-    // Some information methods
+    // Служебная информация
     virtual quint32 paramCount() = 0;
     virtual QString name() = 0;
     virtual bool threadable() = 0;
 
-    // Custom mutation mechanism
+    // Для определения типа мутации
     virtual bool isSimpleMutation() = 0;
     virtual void mutate(bool onlyOnce, qreal probability) = 0;
 
-    // Custom crossover mechanism
+    // Для определения типа скрещивания
     virtual bool isSimpleCrossover() = 0;
     virtual void crossover(ICreature *p1, ICreature *p2) = 0;
 
@@ -27,25 +27,25 @@ class ICreature {
 
     virtual ~ICreature() {}
 
-    // Create random new ICreature
+    // Создать новый объект класса-потомка
     virtual ICreature *create() = 0;
 
-    // Set parameter to random value
+    // Инициализировать значение с плавающей запятой по номеру
     virtual void initDoubleParam(quint32 number) = 0;
 
-    // Calculate fitness
+    // Подсчёт приспособленности
     virtual void calculate() = 0;
 
-    // For some preparation work, called only once
+    // Для настройки задачи, вызывается 1 раз при загрузке
     virtual void prepare() = 0;
 
-    // For some cleaning work, called only once
+    // Для очистки задачи, вызывается 1 раз при закрытии
     virtual void clean() = 0;
 
-    // Construct information window
+    // Вернуть окно с информацией
     virtual QDialog *getInfoWindow() = 0;
 
-    // Update shown information
+    // Обновить окно с информацией
     virtual void updateInfoWindow() = 0;
 };
 

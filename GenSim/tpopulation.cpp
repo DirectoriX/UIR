@@ -1,6 +1,6 @@
 #include "tpopulation.h"
 
-ICreature *root;
+ICreature *root; // Коренная особь
 quint32 paramCount, stopGen, stopTime;
 bool simpleMutation, simpleCrossover, increase, stopG, stopT, stopF;
 qreal stopFt;
@@ -8,16 +8,19 @@ QDialog *wnd;
 
 const qreal maxDifference = 0.0015;
 
+// Два варианта сортировки
 bool cmpi(ICreature *i, ICreature *j) { return (i->fitness > j->fitness); }
 
 bool cmpd(ICreature *i, ICreature *j) { return (i->fitness < j->fitness); }
 
+// Обёртка вызова функции вычисления приспособленности для многопоточного выполнения
 void calc(ICreature *&c)
 {
   if (qIsNaN(c->fitness))
     { c->calculate(); }
 }
 
+// Инициализация
 TPopulation::TPopulation(QObject *parent): QThread(parent)
 {
   QThreadPool::globalInstance()->reserveThread();
@@ -42,12 +45,14 @@ TPopulation::~TPopulation()
   QThreadPool::globalInstance()->releaseThread();
 }
 
+// Обновление настроек ГА
 void TPopulation::updateSettings(const settings &s, bool isReset, bool resetTime)
 {
   this->s = s;
   mutex.lock();
   reconfigure = true;
 
+  // После сброса?
   if (isReset)
     {
       generation = 0;
@@ -61,11 +66,13 @@ void TPopulation::updateSettings(const settings &s, bool isReset, bool resetTime
   mutex.unlock();
 }
 
+// Обновление информации окна
 void TPopulation::requestUpdate()
 {
   values.clear();
   mutex.lock();
 
+  // Получаем приспособленность всех особей
   for (i = 0; i < creatures.count(); i++)
     {
       values.append(creatures[i]->fitness) ;
@@ -79,18 +86,21 @@ void TPopulation::requestUpdate()
   emit updateView(generation, elapsedTime, values);
 }
 
+// Остановка поиска
 void TPopulation::requestStop()
 {
   stop = true;
   stopRequested = true;
 }
 
+// Возобновление поиска
 void TPopulation::requestContinue()
 {
   t.start();
   condition.wakeOne();
 }
 
+// Прерывание поиска, при выходе из программы
 void TPopulation::requestAbort()
 {
   abort = true;
@@ -99,11 +109,13 @@ void TPopulation::requestAbort()
     { condition.wakeOne(); }
 }
 
+// Запрос на обновление окна с подробной информацией
 void TPopulation::requestFullInfo(quint32 index)
 {
   creatures[index]->updateInfoWindow();
 }
 
+// Установка условий останова
 void TPopulation::setStopConditions(bool sgen, quint32 gen, bool stime, const QTime &time, bool sf, qreal f)
 {
   stopG = sgen;
@@ -116,6 +128,7 @@ void TPopulation::setStopConditions(bool sgen, quint32 gen, bool stime, const QT
   stopFt = f;
 }
 
+// Установка коренной особи
 QString TPopulation::setRoot(ICreature *newRoot)
 {
   clear();
@@ -129,6 +142,7 @@ QString TPopulation::setRoot(ICreature *newRoot)
   return root->name();
 }
 
+// Определение степени различия особей
 qreal TPopulation::difference(qint32 c1, qint32 c2)
 {
   qreal result = 0;
@@ -141,6 +155,7 @@ qreal TPopulation::difference(qint32 c1, qint32 c2)
   return result;
 }
 
+// Простое скрещивание
 void TPopulation::crossover(quint32 parent1, quint32 parent2)
 {
   ICreature *last, *p1, *p2;
@@ -154,6 +169,7 @@ void TPopulation::crossover(quint32 parent1, quint32 parent2)
   last->fitness = NAN;
 }
 
+// Удаление всех особей
 void TPopulation::clear()
 {
   foreach (ICreature *c, creatures)
@@ -164,8 +180,10 @@ void TPopulation::clear()
   creatures.clear();
 }
 
+// Основной цикл
 void TPopulation::run()
 {
+  // Куча переменных для настроек
   quint32 populationMax, populationMin;
   qreal probabilityMutation;
   bool selectFromNew, mutateOnce, createNew, clear, threadable;
@@ -177,28 +195,36 @@ void TPopulation::run()
   createNew = true;
   clear = true;
   threadable = true;
+  // Узнаём время начала
   t.start();
 
   forever
     {
+      // Чтобы всё поколение считалось одинаково и полностью - блокируем мьютекс
       mutex.lock();
 
+      // Нужно остановить
       if (stop)
         {
           if (!creatures.isEmpty())
-            { emit addPoint(generation, creatures[0]->fitness); }
+            {
+              // Обязательно добавляем точку на график!
+              emit addPoint(generation, creatures[0]->fitness);
+            }
 
           emit stopped(stopRequested);
           condition.wait(&mutex);
           stop = false;
         }
 
+      // Прерываем, ибо закрывают программу
       if (abort)
         {
           mutex.unlock();
           return;
         }
 
+      // Перенастройка
       if (reconfigure)
         {
           populationMax = s.populationMax;
@@ -213,11 +239,10 @@ void TPopulation::run()
           increase = s.increase;
         }
 
+      // Если надо удалять похожие существа...
       if (clear && ((generation % 10) == 1))
         {
           quint32 c = creatures.count();
-          //if ((creatures[0]->fitness / creatures[c / 2]->fitness) > 0.99995 &&
-          //    (creatures[c / 2]->fitness / creatures[0]->fitness) > 0.99995)
           {
             for (ui = 0; ui < c; ui++)
               {
@@ -236,6 +261,7 @@ void TPopulation::run()
                   }
               }
 
+            // ...удаляем
             for (ui = c - 1; ui > 0; ui--)
               {
                 if (qIsNaN(creatures[ui]->fitness))
@@ -247,14 +273,16 @@ void TPopulation::run()
           }
         }
 
-      generation++;
+      generation++; // Номер поколения
 
+      // Если вдруг популяция меньше минимального размера - дополняем новыми
       for (ui = creatures.count(); ui < populationMin; ui++)
         {
           creatures.append(root->create());
           creatures.last()->fitness = NAN;
         }
 
+      // Добавляем новое существо если пользователь хочет
       if (createNew)
         {
           creatures.append(root->create());
@@ -263,7 +291,8 @@ void TPopulation::run()
 
       quint32 c1, c2;
 
-      if (selectFromNew)
+      // Селекция
+      if (selectFromNew) // Если выбирать из новых
         {
           quint32 count;
 
@@ -283,7 +312,7 @@ void TPopulation::run()
                 }
             }
         }
-      else
+      else // Если не выбирать из новых
         {
           quint32 upper = creatures.count();
 
@@ -303,10 +332,11 @@ void TPopulation::run()
             }
         }
 
+      // Мутации
       for (i = 1; i < creatures.count(); i++)
         {
-          if (simpleMutation)
-            if (mutateOnce)
+          if (simpleMutation) // Если обычная мутация
+            if (mutateOnce) // Только одна мутация на особь
               {
                 if (RNG::getreal() < probabilityMutation)
                   {
@@ -314,7 +344,7 @@ void TPopulation::run()
                     creatures[i]->fitness = NAN;
                   }
               }
-            else
+            else // Несколько мутаций на особь
               {
                 for (quint32 j = 0; j < paramCount; j++)
                   {
@@ -325,18 +355,19 @@ void TPopulation::run()
                       }
                   }
               }
-          else
+          else // Если мутация реализоана в плагине
             {
               creatures[i]->mutate(mutateOnce, probabilityMutation);
               creatures[i]->fitness = NAN;
             }
         }
 
-      if (threadable)
+      // Вычисление
+      if (threadable) // В несколько потоков
         {
           QtConcurrent::blockingMap(creatures, calc);
         }
-      else
+      else // В один поток
         {
           for (ui = 0; ui < populationMax; ui++)
             {
@@ -345,17 +376,21 @@ void TPopulation::run()
             }
         }
 
+      // Сортировка, порядок задаётся пользователем, поэтому условие
       if (increase)
         { std::sort(creatures.begin(), creatures.end(), cmpi); }
       else
         { std::sort(creatures.begin(), creatures.end(), cmpd); }
 
+      // Удаляем последние существа пока размер популяции не станет минимальным
       for (ui = populationMax - 1; ui >= populationMin; ui--)
         {
           delete creatures[ui];
           creatures.removeLast();
         }
 
+      // Если номер поколения кратен делителю...
+      // делитель нужен чтобы не ставить огромное число точек на график
       if (generation % divider == 0)
         {
           if (generation % (divider * 10) == 0)
@@ -366,17 +401,19 @@ void TPopulation::run()
 
       mutex.unlock();
 
-      if ((stopG && generation >= stopGen) ||
-          (stopT && stopTime <= elapsedTime) ||
-          (stopF &&
+      // Условия останова
+      if ((stopG && generation >= stopGen) || // Номер поколения
+          (stopT && stopTime <= elapsedTime) || // Время работы
+          (stopF && // По достигнутому значению
            ((increase && (creatures.first()->fitness >= stopFt)) ||
             (!increase && (creatures.first()->fitness <= stopFt)))
           ))
         {
           stop = true;
           stopRequested = false;
-        };
+        }
 
+      // Если прошло хотя бы полсекунды - обновляем информацию!
       if ((et = t.elapsed()) > 500)
         {
           elapsedTime += et;
